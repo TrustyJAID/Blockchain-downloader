@@ -78,14 +78,13 @@ def get_tx_from_addr(address):
             dat.close()
             for tx in txs:
                 txlist.append(tx["hash"].encode('ascii'))
-                print(txlist[-1])
             offset += 50
         except:
             pass
 
         if len(txlist) == n_tx:
             break
-        print("Progress:", len(txlist), "/", n_tx)
+        print("Progress (if it gets 'stuck' wait a minute or two):", len(txlist), "/", n_tx)
         
     return txlist
 
