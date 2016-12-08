@@ -1,4 +1,6 @@
 #!usr/bin/python2
+# https://gist.github.com/shirriff/64f48fa09a61b56ffcf9#file-bitcoin-file-downloader-py
+# 
 # This code has been modified from several sources and is free to use
 # Install Python 2.7.12
 # Install pip on windows
