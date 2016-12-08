@@ -37,7 +37,7 @@ of transactions must also end with a blank line and
 '''
 
 
-RPCSERVER = "http://Damez:something@localhost:8332"
+RPCSERVER = "http://User:Pass@localhost:8332"
 
 SERVER = jsonrpclib.Server(RPCSERVER)
 
