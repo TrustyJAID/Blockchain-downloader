@@ -1,22 +1,4 @@
 #!usr/bin/python2
-# https://gist.github.com/shirriff/64f48fa09a61b56ffcf9#file-bitcoin-file-downloader-py
-# 
-# This code has been modified from several sources and is free to use
-# Install Python 2.7.12
-# Install pip on windows
-# https://github.com/BurntSushi/nfldb/wiki/Python-&-pip-Windows-installation
-# Install pip on linux $ sudo apt-get install python-pip
-# During install when it asks for what modules to install
-# ensure that the last option install to PATH is enabled
-# After installing run Command Prompt/Terminal
-# Change directory to where the file is saved
-# Type: python blockchain_downloader.py
-# You can add the transaction after or it will ask
-# for one upon start if one isn't supplied
-# You can also add a filename to save it as after the transaction
-# The dafault filename is 'file'
-# If you have the bitcoin RPC service setup with a
-# local blockchain add it to the RPC settings at the top
 from __future__ import print_function
 import sys
 import struct
@@ -37,15 +19,16 @@ of transactions must also end with a blank line and
 '''
 
 
-RPCSERVER = "http://User:Pass@localhost:8332"
+RPCSERVER = "http://User:Pass@localhost:8332" # RPC login info
 
-SERVER = jsonrpclib.Server(RPCSERVER)
+SERVER = jsonrpclib.Server(RPCSERVER)   # Could be concactenated with login info
 
-PRINTDATA = True  # Lets you see file output in terminal
+PRINTDATA = True    # Lets you see file output in terminal
+                    # removed most for simplicity
 
 
 try:
-    # Checks for an RPC connection
+    # Checks for an RPC connection to local blockchain
     SERVER.getinfo()
     LOCAL = True
 except Exception, e:
@@ -53,20 +36,24 @@ except Exception, e:
     LOCAL = False
 
 
-# @cuda.jit(device='gpu')
-def gettxfromwallet(walletid):
 
-    blockcount = SERVER.getblockcount()
-    for i in range(441786, 441785, -1): # 434504-434764 435170 - 435350
-        start = timer()
-        #print ("Searching block: {0} for wallet: {1} for wallet: ".format(i, walletid))
-        blockhash = SERVER.getblockhash(i)
-        for tx in SERVER.getblock(blockhash)['tx']:
-            #print(tx)
-            printdataoutlocal(tx)
+def gettxfromwallet(walletid):
+    # This was supposed to go through each block one by one
+    # Then it would check each transaction in each block 
+    # looking for one with a scriptPubKey that matches the 
+    # wallet ID asked for but this takes a long timer
+    # I ran it on 1400 blocks and it took 7 hours to complete
+    blockcount = SERVER.getblockcount()     # This will get the total current blocks
+    for i in range(blockcount, 0, -1):
+        start = timer()                     # Start a timer to see how long for each block
+        # print ("Searching block: {0} for wallet: {1} for wallet: ".format(i, walletid))
+        blockhash = SERVER.getblockhash(i)  # Gets the block hash from the block index number
+        for tx in SERVER.getblock(blockhash)['tx']:  # Gets all transactions from block hash
+            # print(tx)                                 # Prints all transactions checked
+            printdataoutlocal(tx)                       # currently checks all transactions for data
             # print(transaction['vout'][0:-2])
-            #for var in transaction['vout'][0:-2]:
-                # print (var)
+            # for var in transaction['vout'][0:-2]:
+                # print(var)
                 #savefile(str(var))
                 #for address in var['scriptPubKey']['addresses']:
                     # print(address)
@@ -77,61 +64,67 @@ def gettxfromwallet(walletid):
 
 
 def printdataoutlocal(transaction):
-    '''Decodes an individual transaction using local blockchain'''
-    rawTx = SERVER.getrawtransaction(transaction)
-    tx = SERVER.decoderawtransaction(rawTx)
-    hexdata = ''
-    ohexdata=''
-    data = b''
-    odata = b''
+    """
+    Decodes an individual
+    transaction using local blockchain
+    """
+    rawTx = SERVER.getrawtransaction(transaction)   # gets the raw transaction from RPC
+    tx = SERVER.decoderawtransaction(rawTx)         # Decodes the raw transaction from RPC
+    hexdata = ''                                    # string for collecting hex data
+    ohexdata = ''                                   # string for original search hex data
+    data = b''                                      # binary data
+    odata = b''                                     # binary original data
     # print(tx)
-    for txout in tx['vout']:
-        #print(txout)
-        for op in txout['scriptPubKey']['asm'].split(' '):
+    for txout in tx['vout'][0:-2]:                  # Searches json for all vout, failed a few times
+        # print(txout)
+        for op in txout['scriptPubKey']['asm'].split(' '):  # searches for all OP data
             # print (op)
-            try:
-                hexdata += op.encode('utf8')
-                data += unhexlify(op.encode('utf8'))
-                if not op.startswith('OP_') and len(op) >= 40:
-                    ohexdata += op.encode('utf8')
-                    odata += unhexlify(op.encode('utf8'))
-            except:
+            try:                                        # Lots of transactions failed here due to 
+                hexdata += op.encode('utf8')        # strange length hex and/or binary
+                data += unhexlify(op.encode('utf8'))    # This will try it and move on
+                if not op.startswith('OP_') and len(op) >= 40:  # The outputs are so many
+                    ohexdata += op.encode('utf8')               # to try and find the useful data
+                    odata += unhexlify(op.encode('utf8'))       # in different areas of the transaction
+            except:                                             # e.g. torrent headers inside the OP code
                 data += op.encode('utf8')
 
-    print(transaction + checkheader(hexdata), end='\r')
-    #checksum(data)
-    try:
-        length = struct.unpack('<L', data[0:4])[0]
-        data = data[8:8+length]
-        length = struct.unpack('<L', odata[0:4])[0]
-        odata = odata[8:8+length]
-        savefile(hexdata, FILENAME+"hex.txt")
-        savefile(data, FILENAME+"data.txt")
-        savefile(odata, FILENAME+"odata.txt")
-        savefile(ohexdata, FILENAME+"ohex.txt")
-        savefile(transaction+checkheader(hexdata)+"\r\n", "headerfiles.txt")
+    print(transaction + checkheader(hexdata), end='\r')         # would have liked multi line prints
+    #checksum(data)                                             
+    try:                                            # a lot of transactions failed here trying to
+        length = struct.unpack('<L', data[0:4])[0]  # unpack the binary data so I added parameters
+        data = data[8:8+length]                     # to try and extract all data
+        length = struct.unpack('<L', odata[0:4])[0] # not everything was uploaded using the satoshi script
+        odata = odata[8:8+length]                   # Same issue with strange length hex code
+        savefile(hexdata, FILENAME+"hex.txt")       # saves all hex data
+        savefile(data, FILENAME+"data.txt")         # saves all binary data
+        savefile(odata, FILENAME+"odata.txt")       # saves original script binary data
+        savefile(ohexdata, FILENAME+"ohex.txt")     # saves original script binary data
+        savefile(transaction+checkheader(hexdata)+"\r\n", "headerfiles.txt")    # creates a file of transactions and headers
         return data
     except:
-        savefile(hexdata, FILENAME+"fhex.txt")
-        savefile(data, FILENAME+"fdata.txt")
-        savefile(odata, FILENAME+"fodata.txt")
+        savefile(hexdata, FILENAME+"fhex.txt")      # This is here to save files when the unpack fails
+        savefile(data, FILENAME+"fdata.txt")        # if we can figure out how to solve the unpacking
+        savefile(odata, FILENAME+"fodata.txt")      # this can be removed
         savefile(ohexdata, FILENAME+"fohexdata.txt")
         savefile(transaction+checkheader(hexdata)+"\r\n", "headerfiles.txt")
         return data
 
 
-def checksum(data):
+def checksum(data):  # This was left in from the original script, it doesn't work correctly
+                    # There is a document explaining how the checksum works
+                    # maybe we can figure out why it doesn't currently
 
     checksum = struct.unpack('<L', data[4:8])[0]
-    # This was left in from the original script, it doesn't work correctly'
     if checksum != crc32(data):
         print('Checksum mismatch; expected %d but calculated %d' % (checksum, crc32(data)))
-    # sys.exit()
+    # sys.exit()        # Left in from the original script
 
 
 def printdataoutonline(transaction):
-    """This function checks the data
-    in the given blockhash using blockchain.info"""
+    """
+    This function checks the data
+    in the given blockhash using blockchain.info
+    """
 
     url = ('https://blockchain.info/tx/%s?show_adv=true' % str(transaction))
     dataout = urllib2.urlopen(url)
@@ -169,8 +162,10 @@ def printdataoutonline(transaction):
 
 
 def fileofblocks():
-    """This function checks the blockchain
-    for all files in the FILENAME document"""
+    """
+    This function checks the blockchain
+    for all transactions in the FILENAME document
+    """
     with open(BLOCKCHAINADDRESS) as f:
         transaction = f.readlines()
         # FILENAME = transaction
@@ -188,8 +183,10 @@ def fileofblocks():
 
 
 def savefile(dataout, filename):
-    """This saves the data to the chosen
-    filename in binary by overwriting the file """
+    """
+    This saves the data to the chosen
+    filename in binary by appending the file
+    """
 
     with open(filename, "ab") as output:
         output.write(dataout)
@@ -197,6 +194,17 @@ def savefile(dataout, filename):
 
 
 def checkheader(hexcode):
+    """
+    This is the hex header search function
+    It searches the line of hex
+    for any of these known header hex values
+    Todo: add private PGP 2048, 4096, 8192 headers
+    also add two transaction hex search in cases
+    where header data is split between two transactions
+    first attempt was to concactenate all hex data every time 
+    but that took a long time to do. At most two or three transactions
+    will contain the header
+    """
     #    if "99".lower() in hexcode:
     #        filetype += "GPG Header Found "    # GPG Header| Commented out 
     #    if "9901".lower() in hexcode:
