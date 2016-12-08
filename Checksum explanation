@@ -1,0 +1,16 @@
+Satoshi Uploader data string structure
+
+[XX][YY]01234567890123456789012345678901234567890123456789012345678901234[YY]0123456789012345678901234567890123456789012345678901234567890123456[YY]0123456789012345678901234567890123456789012345678901234567890123[ZZ]E
+
+XX = CRC32 Checksum
+YY = Length of data string to follow (65 is the length until the last line of the file which is notated as 33 or less)
+ZZ = Integer (Length=2; e.g. 83; looks like the address converted to bytes and anded with some shit)
+E  = ASCII char 65533
+
+Note that the following may occur toward the end of the file:
+
+[XX][YY]01234567890123456789012345678901234567890123456789012345678901234[YY]01234567890123456789012[ZZ]E
+
+--OR--
+
+[XX][YY]01234567890123456789012[ZZ]E
