@@ -275,8 +275,7 @@ def checkheader(hexcode):
 
 # This is the start of the program
 
-global oldhex
-oldhex = ''
+
 if len(sys.argv) == 3:
     # This checks if two arguments were given and
     # utilises them as the transaction then the filename to save
