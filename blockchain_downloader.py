@@ -25,6 +25,9 @@ import urllib2
 import imp
 import pip
 from timeit import default_timer as timer
+import time
+import json
+
 try:
     imp.find_module('jsonrpclib')
 except ImportError:
@@ -52,6 +55,43 @@ except Exception, e:
     print("RPC connection not available")
     LOCAL = False
 
+def get_tx_from_addr(address):
+    error = True
+    
+    print("Fetching transactions from", address)
+    while error:
+        try: 
+            dat = urllib2.urlopen("https://blockchain.info/rawaddr/" + address)
+            error = False
+        except:
+            print("Trying to open address", address)
+            time.sleep(4)
+    n_tx = json.loads( dat.read().decode() )["n_tx"]
+
+
+    txlist = []
+    offset = 0
+    while True:
+        try:
+            dat = urllib2.urlopen("https://blockchain.info/rawaddr/" + address + "?format=json&limit=50&offset="+ str(offset) )
+            txs = json.loads( dat.read().decode() )["txs"]
+            dat.close()
+            for tx in txs:
+                txlist.append(tx["hash"].encode('ascii'))
+                print(txlist[-1])
+            offset += 50
+        except:
+            pass
+
+        if len(txlist) == n_tx:
+            break
+        print("Progress:", len(txlist), "/", n_tx)
+        
+    return txlist
+
+def gettxfromwallet2(walletid):
+    for tx in get_tx_from_addr(walletid):
+        printdataoutlocal(tx)
 
 # @cuda.jit(device='gpu')
 def gettxfromwallet(walletid):
