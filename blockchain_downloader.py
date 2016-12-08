@@ -7,6 +7,7 @@ import urllib2
 import imp
 import pip
 from timeit import default_timer as timer
+import platform
 try:
     imp.find_module('jsonrpclib')
 except ImportError:
@@ -99,14 +100,20 @@ def printdataoutlocal(transaction):
         savefile(data, FILENAME+"data.txt")         # saves all binary data
         savefile(odata, FILENAME+"odata.txt")       # saves original script binary data
         savefile(ohexdata, FILENAME+"ohex.txt")     # saves original script binary data
-        savefile(transaction+checkheader(hexdata)+"\r\n", "headerfiles.txt")    # creates a file of transactions and headers
+        if platform.system() == "Windows":
+            savefile(transaction+checkheader(hexdata)+"\r\n", "headerfiles.txt")    # creates a file of transactions and headers
+        else:
+            savefile(transaction+checkheader(hexdata)+"\n", "headerfiles.txt")
         return data
     except:
         savefile(hexdata, FILENAME+"fhex.txt")      # This is here to save files when the unpack fails
         savefile(data, FILENAME+"fdata.txt")        # if we can figure out how to solve the unpacking
         savefile(odata, FILENAME+"fodata.txt")      # this can be removed
         savefile(ohexdata, FILENAME+"fohexdata.txt")
-        savefile(transaction+checkheader(hexdata)+"\r\n", "headerfiles.txt")
+        if platform.system() == "Windows":
+            savefile(transaction+checkheader(hexdata)+"\r\n", "headerfiles.txt")
+        else:
+            savefile(transaction+checkheader(hexdata)+"\n", "headerfiles.txt")
         return data
 
 
