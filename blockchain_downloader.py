@@ -79,7 +79,7 @@ def printdataoutlocal(transaction):
     for txout in tx['vout'][0:-2]:                  # Searches json for all vout, failed a few times
         # print(txout)
         for op in txout['scriptPubKey']['asm'].split(' '):  # searches for all OP data
-            # print (op)
+            print (op)
             try:                                        # Lots of transactions failed here due to 
                 hexdata += op.encode('utf8')        # strange length hex and/or binary
                 data += unhexlify(op.encode('utf8'))    # This will try it and move on
@@ -90,7 +90,7 @@ def printdataoutlocal(transaction):
                 data += op.encode('utf8')
 
     print(transaction + checkheader(hexdata), end='\r')         # would have liked multi line prints
-    #checksum(data)                                             
+    # checksum(data)
     try:                                            # a lot of transactions failed here trying to
         length = struct.unpack('<L', data[0:4])[0]  # unpack the binary data so I added parameters
         data = data[8:8+length]                     # to try and extract all data
@@ -251,8 +251,8 @@ def checkheader(hexcode):
         filetype += "PDF Footer Found "         # PDF Footer
     if "616E6E6F756E6365".lower() in hexcode:
         filetype += "Torrent Header Found "     # Torrent Header
-    if "1F8B08".lower() in hexcode:
-        filetype += ".TAR.GZ Header Found "     # TAR/GZ Header
+    if "1F8B".lower() in hexcode:
+        filetype += ".TAR.GZ Header Found "     # TAR/GZ Header | Going to have lots of false positives
     if "0011AF".lower() in hexcode:
         filetype += "FLI Header Found "         # FLI Header
     if "504B03040A000200".lower() in hexcode:
@@ -279,10 +279,14 @@ def checkheader(hexcode):
         filetype += "MIDI Header Found"         # MIDI Header
     if "377ABCAF271C".lower() in hexcode:
         filetype += "7z Header Found"           # 7z Header
+    if "0000001706".lower() in hexcode:
+        filetype += "7z Footer Found"           # 7z Footer
     if "57696b696c65616b73".lower() in hexcode:
         filetype += "Wikileaks"                 # Wikileaks
     if "4A756C69616E20417373616E6765".lower() in hexcode:
         filetype += "Julian Assange"            # Julain Assange
+    if "4d656e646178".lower() in hexcode:
+        filetype += "Mendax"                    # Mendax
     else:
         filetype += ""
     return filetype
