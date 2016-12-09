@@ -1,6 +1,6 @@
 # Blockchain-downloader
 
-Downloads information from the blockchain;
+Downloads information from the blockchain.
 
 This code has been modified from several sources and is free to use.
 
@@ -8,10 +8,9 @@ Code used is modified versions of `jean.py` to download data from blockchain.inf
 
 ## Instructions
 
-- Install Python 2.7
-- Install pip
-    - windows: https://github.com/BurntSushi/nfldb/wiki/Python-&-pip-Windows-installation
-    - linux: `$ sudo apt-get install python-pip`
+- Install Python 2.7 and `pip`
+    - Windows: https://github.com/BurntSushi/nfldb/wiki/Python-&-pip-Windows-installation
+    - Linux: `$ sudo apt-get install python-pip`
 - During install when it asks for what modules to install, ensure that the last option "install to `PATH`" is enabled.
 - After installing, run Command Prompt/Terminal
 - Change directory to where the file is saved (`cd /path/to/folder`)
