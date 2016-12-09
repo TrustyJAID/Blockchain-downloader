@@ -79,7 +79,7 @@ def printdataoutlocal(transaction):
     for txout in tx['vout'][0:-2]:                  # Searches json for all vout, failed a few times
         # print(txout)
         for op in txout['scriptPubKey']['asm'].split(' '):  # searches for all OP data
-            print (op)
+            # print (op)
             try:                                        # Lots of transactions failed here due to 
                 hexdata += op.encode('utf8')        # strange length hex and/or binary
                 data += unhexlify(op.encode('utf8'))    # This will try it and move on
