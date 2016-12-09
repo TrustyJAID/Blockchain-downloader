@@ -208,9 +208,11 @@ def checkheader(hexcode):
     Todo: add private PGP 2048, 4096, 8192 headers
     also add two transaction hex search in cases
     where header data is split between two transactions
-    first attempt was to concactenate all hex data every time 
+    first attempt was to concactenate all hex data every time
     but that took a long time to do. At most two or three transactions
     will contain the header
+    Also it might be worth adding more function to the names
+    such as including all possible capitalization hex
     """
     #    if "99".lower() in hexcode:
     #        filetype += "GPG Header Found "    # GPG Header| Commented out 
