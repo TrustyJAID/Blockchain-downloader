@@ -21,9 +21,10 @@ work for any previous file on the blockchain. The list
 of transactions must also end with a blank line and
 '''
 
-SERVER = jsonrpclib.Server("http://User:Pass@localhost:8332")   # RPC Login
+SERVER = jsonrpclib.Server("http://Damez:something@localhost:8332")   # RPC Login
 BLOCKCHAINADDRESS = ''
-FILENAME = 'file.txt'
+global FILENAME
+FILENAME = 'file'
 INDIVIDUALFILE = False
 try:
     # Checks for an RPC connection to local blockchain
@@ -36,12 +37,12 @@ except Exception, e:
 
 class dlfn():
 
-    def get_tx_from_online(address):
+    def get_tx_from_online(self, address):
         error = True
 
         print("Fetching transactions from", address)
         while error:
-            try: 
+            try:
                 dat = urllib2.urlopen("https://blockchain.info/rawaddr/" + address)
                 error = False
             except:
@@ -68,13 +69,13 @@ class dlfn():
 
         return txlist
 
-    def get_block_data(start, end):
+    def get_block_data(self, start, end):
         # This was supposed to go through each block one by one
         # Then it would check each transaction in each block 
         # looking for one with a scriptPubKey that matches the 
         # wallet ID asked for but this takes a long timer
         # I ran it on 1400 blocks and it took 7 hours to complete
-        blockcount = SERVER.getblockcount()     # This will get the total current blocks
+        # blockcount = SERVER.getblockcount()     # This will get the total current blocks
         for i in range(start, end):
             start = timer()                     # Start a timer to see how long for each block
             # print ("Searching block: {0} for wallet: {1} for wallet: ".format(i, walletid))
@@ -86,12 +87,13 @@ class dlfn():
             endtimer = timer() - start
             print(endtimer)
 
-    def get_data_local(transaction):
+    def get_data_local(self, transaction):
         """
         Decodes an individual
         transaction using local blockchain
         """
         if INDIVIDUALFILE:
+            global FILENAME
             FILENAME = transaction
         rawTx = SERVER.getrawtransaction(transaction)   # gets the raw transaction from RPC
         tx = SERVER.decoderawtransaction(rawTx)         # Decodes the raw transaction from RPC
@@ -110,54 +112,45 @@ class dlfn():
                     if not op.startswith('OP_') and len(op) >= 40:  # The outputs are so many
                         ohexdata += op.encode('utf8')               # to try and find the useful data
                         odata += unhexlify(op.encode('utf8'))       # in different areas of the transaction
-                except e:                                             # e.g. torrent headers inside the OP code
+                except:                                             # e.g. torrent headers inside the OP code
                     data += op.encode('utf8')
-                    print(e)
 
-        print(transaction + dlfn.check_magic(hexdata), end='\r')         # would have liked multi line prints
+        print(transaction + chkfn().check_magic(hexdata), end='\r')         # would have liked multi line prints
         # checksum(data)
         try:                                            # a lot of transactions failed here trying to
             length = struct.unpack('<L', data[0:4])[0]  # unpack the binary data so I added parameters
             data = data[8:8+length]                     # to try and extract all data
-            dlfn.save_file(hexdata, FILENAME+"hex.txt")       # saves all hex data
-            dlfn.save_file(data, FILENAME+"data.txt")         # saves all binary data
-            dlfn.save_file(odata, FILENAME+"odata.txt")       # saves original script binary data
-            dlfn.save_file(ohexdata, FILENAME+"ohex.txt")     # saves original script binary data
+            self.save_file(hexdata, FILENAME+"hex.txt")       # saves all hex data
+            self.save_file(data, FILENAME+"data.txt")         # saves all binary data
+            self.save_file(odata, FILENAME+"odata.txt")       # saves original script binary data
+            self.save_file(ohexdata, FILENAME+"ohex.txt")     # saves original script binary data
             if platform.system() == "Windows":
-                dlfn.save_file(transaction+dlfn.check_magic(hexdata)+"\r\n", "headerfiles.txt")  # creates a file of transactions and headers
+                self.save_file(transaction+chkfn().check_magic(hexdata)+"\r\n", "headerfiles.txt")  # creates a file of transactions and headers
             else:
-                dlfn.save_file(transaction+dlfn.check_magic(hexdata)+"\n", "headerfiles.txt")
+                self.save_file(transaction+chkfn().check_magic(hexdata)+"\n", "headerfiles.txt")
             return data
-        except e:
-            print(e)
-            dlfn.save_file(hexdata, FILENAME+"fhex.txt")      # This is here to save files when the unpack fails
-            dlfn.save_file(data, FILENAME+"fdata.txt")        # if we can figure out how to solve the unpacking
-            dlfn.save_file(odata, FILENAME+"fodata.txt")      # this can be removed
-            dlfn.save_file(ohexdata, FILENAME+"fohexdata.txt")
+        except:
+            self.save_file(hexdata, FILENAME+"fhex.txt")      # This is here to save files when the unpack fails
+            self.save_file(data, FILENAME+"fdata.txt")        # if we can figure out how to solve the unpacking
+            self.save_file(odata, FILENAME+"fodata.txt")      # this can be removed
+            self.save_file(ohexdata, FILENAME+"fohexdata.txt")
             if platform.system() == "Windows":
-                dlfn.save_file(transaction+dlfn.check_magic(hexdata)+"\r\n", "headerfiles.txt")
+                self.save_file(transaction+chkfn().check_magic(hexdata)+"\r\n", "headerfiles.txt")
             else:
-                dlfn.save_file(transaction+dlfn.check_magic(hexdata)+"\n", "headerfiles.txt")
+                self.save_file(transaction+chkfn().check_magic(hexdata)+"\n", "headerfiles.txt")
             return data
 
-    def checksum(data):
-        """
-        Checksum for multi file upload data
-        """
-
-        checksum = struct.unpack('<L', data[4:8])[0]
-        if checksum != crc32(data):
-            print('Checksum mismatch; expected %d but calculated %d' % (checksum, crc32(data)))
-
-    def get_data_online(transaction):
+    def get_data_online(self, transaction):
         """
         This function checks the data
         in the given blockhash using blockchain.info
         """
         if INDIVIDUALFILE:
+            global FILENAME
             FILENAME = transaction
         url = ('https://blockchain.info/tx/%s?show_adv=true' % str(transaction))
         dataout = urllib2.urlopen(url)
+        odata = b''
         data = b''
         hexdata = ''
         atoutput = False
@@ -177,40 +170,40 @@ class dlfn():
                             hexdata += c
                             data += unhexlify(c)
 
+        odata += data
         length = struct.unpack('<L', data[0:4])[0]
         data = data[8:8+length]
-        if dlfn.check_magic(hexdata) != '':
-            print(dlfn.check_magic(hexdata))
+        if chkfn().check_magic(hexdata) != '':
+            print(chkfn().check_magic(hexdata))
 
-        dlfn.save_file(data, FILENAME)
-        dlfn.save_file(dlfn.check_magic(hexdata)+transaction, "headerfiles.txt")
-
+        self.save_file(odata, FILENAME+"o")
+        self.save_file(data, FILENAME)
+        if platform.system() == "Windows":
+            self.save_file(transaction+chkfn().check_magic(hexdata)+"\r\n", "headerfiles.txt")
+        else:
+            self.save_file(transaction+chkfn().check_magic(hexdata)+"\n", "headerfiles.txt")
         return data
 
-    def get_tx_list():
+    def get_tx_list(self, tx_list):
         """
         This function checks the blockchain
         for all transactions in the FILENAME document
         """
-        with open(BLOCKCHAINADDRESS) as f:
+        with open(tx_list) as f:
             transaction = f.readlines()
         for i in range(len(transaction)):
             blockhash = transaction[i].rstrip('\r\n')
+            if (blockhash != ''):
+                if LOCAL:
+                    self.get_data_local(blockhash)
+                else:
+                    self.get_data_online(blockhash)
 
-            if (blockhash == ''):
-                break
-
-            if LOCAL:
-                dlfn.get_data_local(blockhash)
-            else:
-                dlfn.get_data_online(blockhash)
-
-    def save_file(dataout, filename):
+    def save_file(self, dataout, filename):
         """
         This saves the data to the chosen
         filename in binary by appending the file
         """
-
         with open(filename, "ab") as output:
             output.write(dataout)
         output.close()
@@ -222,7 +215,7 @@ class chkfn():
     hexcode2 = ''
     hexcoderev = ''
 
-    def check_magic(hexcode):
+    def check_magic(self, hexcode):
         """
         This is the hex header search function
         It searches the line of hex
@@ -237,9 +230,9 @@ class chkfn():
         such as including all possible capitalization hex
         TODO: finish double transaction check and reverse header search
         """
-        chkfn.hexcode2 += hexcode
-        if chkfn.counter == 1:
-            chkfn.counter = 0
+        self.hexcode2 += hexcode
+        if self.counter == 1:
+            self.counter = 0
 
         filetype = ''
         if "D0CF11E0A1B11AE1".lower() in hexcode:
@@ -288,7 +281,7 @@ class chkfn():
             filetype += "8192PGP Header Found "     # 8192 Header
         if "6D51494E4246672F".lower() in hexcode:
             filetype += "4096PGP Header Found "     # 4096 Header
-        if "952e3e2e584b7a".lower in hexcode:
+        if "952e3e2e584b7a".lower() in hexcode:
             filetype += "2048PGP Header Found "     # 2048 Header
         if "526172211A0700".lower() in hexcode:
             filetype += "Secret Header Found"       # Secret Header
@@ -319,13 +312,23 @@ class chkfn():
         chkfn.counter += 1
         return filetype
 
+    def checksum(self, data):
+        """
+        Checksum for multi file upload data
+        """
 
-class __main__(sys.argv):
+        checksum = struct.unpack('<L', data[4:8])[0]
+        if checksum != crc32(data):
+            print('Checksum mismatch; expected %d but calculated %d' % (checksum, crc32(data)))
+        return checksum
+
+
+class __main__():
     """
     Start of the main program
     This could theoretically all be made in a GUI
     """
-
+    dlfn = dlfn()
     if len(sys.argv) == 3:
         # This checks if two arguments were given and
         # utilises them as the transaction then the filename to save
@@ -354,7 +357,7 @@ class __main__(sys.argv):
 
     if BLOCKCHAINADDRESS.endswith(".txt"):
         # This checks if you're giving a list of transactions or just one
-        dlfn.get_tx_list()
+        dlfn.get_tx_list(BLOCKCHAINADDRESS)
 
     elif BLOCKCHAINADDRESS.isdigit() and BLOCKCHAINADDRESS < SERVER.getblockheight() and LOCAL:
         if len(sys.argv) == 3:
