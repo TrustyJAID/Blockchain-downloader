@@ -21,7 +21,7 @@ work for any previous file on the blockchain. The list
 of transactions must also end with a blank line and
 '''
 
-SERVER = jsonrpclib.Server("http://User:Passg@localhost:8332")   # RPC Login
+SERVER = jsonrpclib.Server("http://User:Pass@localhost:8332")   # RPC Login
 BLOCKCHAINADDRESS = ''
 global FILENAME
 FILENAME = 'file'
@@ -98,27 +98,22 @@ class dlfn():
         rawTx = SERVER.getrawtransaction(transaction)   # gets the raw transaction from RPC
         tx = SERVER.decoderawtransaction(rawTx)         # Decodes the raw transaction from RPC
         hexdata = ''                                    # string for collecting hex data
-        ohexdata = ''                                   # string for original search hex data
         data = b''                                      # binary data
-        odata = b''                                     # binary original data
         for txout in tx['vout'][0:-2]:                  # Searches json for all vout, failed a few times
             for op in txout['scriptPubKey']['asm'].split(' '):  # searches for all OP data
-                try:                                           
-                    if not op.startswith('OP_') and len(op) >= 40:  
-                        hexdata += op.encode('utf8')               
-                        data += unhexlify(op.encode('utf8'))       
-                except:                                             
+                try:
+                    if not op.startswith('OP_') and len(op) >= 40:
+                        hexdata += op.encode('utf8')
+                        data += unhexlify(op.encode('utf8'))
+                except:
                     data += op.encode('utf8')
 
-        print(transaction + chkfn().check_magic(hexdata), end='\r')         # would have liked multi line prints
-        # checksum(data)
+        print(transaction + chkfn().check_magic(hexdata), end='\r')  # would have liked multi line prints
         try:                                            # a lot of transactions failed here trying to
             length = struct.unpack('<L', data[0:4])[0]  # unpack the binary data so I added parameters
             data = data[8:8+length]                     # to try and extract all data
             self.save_file(hexdata, FILENAME+"hex.txt")       # saves all hex data
             self.save_file(data, FILENAME+"data.txt")         # saves all binary data
-            self.save_file(odata, FILENAME+"odata.txt")       # saves original script binary data
-            self.save_file(ohexdata, FILENAME+"ohex.txt")     # saves original script binary data
             if platform.system() == "Windows":
                 self.save_file(transaction+chkfn().check_magic(hexdata)+"\r\n", "headerfiles.txt")  # creates a file of transactions and headers
             else:
@@ -127,8 +122,6 @@ class dlfn():
         except:
             self.save_file(hexdata, FILENAME+"fhex.txt")      # This is here to save files when the unpack fails
             self.save_file(data, FILENAME+"fdata.txt")        # if we can figure out how to solve the unpacking
-            self.save_file(odata, FILENAME+"fodata.txt")      # this can be removed
-            self.save_file(ohexdata, FILENAME+"fohexdata.txt")
             if platform.system() == "Windows":
                 self.save_file(transaction+chkfn().check_magic(hexdata)+"\r\n", "headerfiles.txt")
             else:
