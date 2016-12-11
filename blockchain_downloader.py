@@ -21,7 +21,7 @@ work for any previous file on the blockchain. The list
 of transactions must also end with a blank line and
 '''
 
-SERVER = jsonrpclib.Server("http://Damez:something@localhost:8332")   # RPC Login
+SERVER = jsonrpclib.Server("http://User:Passg@localhost:8332")   # RPC Login
 BLOCKCHAINADDRESS = ''
 global FILENAME
 FILENAME = 'file'
@@ -101,18 +101,13 @@ class dlfn():
         ohexdata = ''                                   # string for original search hex data
         data = b''                                      # binary data
         odata = b''                                     # binary original data
-        # print(tx)
         for txout in tx['vout'][0:-2]:                  # Searches json for all vout, failed a few times
-            # print(txout)
             for op in txout['scriptPubKey']['asm'].split(' '):  # searches for all OP data
-                # print (op)
-                try:                                        # Lots of transactions failed here due to 
-                    hexdata += op.encode('utf8')        # strange length hex and/or binary
-                    data += unhexlify(op.encode('utf8'))    # This will try it and move on
-                    if not op.startswith('OP_') and len(op) >= 40:  # The outputs are so many
-                        ohexdata += op.encode('utf8')               # to try and find the useful data
-                        odata += unhexlify(op.encode('utf8'))       # in different areas of the transaction
-                except:                                             # e.g. torrent headers inside the OP code
+                try:                                           
+                    if not op.startswith('OP_') and len(op) >= 40:  
+                        hexdata += op.encode('utf8')               
+                        data += unhexlify(op.encode('utf8'))       
+                except:                                             
                     data += op.encode('utf8')
 
         print(transaction + chkfn().check_magic(hexdata), end='\r')         # would have liked multi line prints
