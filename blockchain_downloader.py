@@ -10,6 +10,7 @@ from timeit import default_timer as timer
 import platform
 import json
 import time
+import re
 try:
     imp.find_module('jsonrpclib')
 except ImportError:
@@ -21,7 +22,7 @@ work for any previous file on the blockchain. The list
 of transactions must also end with a blank line and
 '''
 
-SERVER = jsonrpclib.Server("http://User:Pass@localhost:8332")   # RPC Login
+SERVER = jsonrpclib.Server("http://User:Passg@localhost:8332")   # RPC Login
 BLOCKCHAINADDRESS = ''
 global FILENAME
 FILENAME = 'file'
@@ -99,8 +100,14 @@ class dlfn():
         tx = SERVER.decoderawtransaction(rawTx)         # Decodes the raw transaction from RPC
         hexdata = ''                                    # string for collecting hex data
         data = b''                                      # binary data
-        for txout in tx['vout'][0:-2]:                  # Searches json for all vout, failed a few times
+        regexsearch = ''
+        for txout in tx['vout']:                  # Searches json for all vout, failed a few times
+            if regexsearch != '':
+                self.regex_pattern(regexsearch)
+                regexsearch = ''
+
             for op in txout['scriptPubKey']['asm'].split(' '):  # searches for all OP data
+                regexsearch += op
                 try:
                     if not op.startswith('OP_') and len(op) >= 40:
                         hexdata += op.encode('utf8')
@@ -127,6 +134,12 @@ class dlfn():
             else:
                 self.save_file(transaction+chkfn().check_magic(hexdata)+"\n", "headerfiles.txt")
             return data
+
+    def regex_pattern(self, data):
+        pattern = r"(?:^| )[0-9a-fA-F]+(?:$| )"
+        matchList = []
+        matchList += re.search(pattern, data)
+        return matchList
 
     def get_data_online(self, transaction):
         """
