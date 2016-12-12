@@ -173,7 +173,6 @@ class dlfn():
         """
         with open(filename, "ab") as output:
             output.write(dataout)
-        output.close()
 
     def checksum(self, data):
         """
