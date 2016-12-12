@@ -1,5 +1,12 @@
 #!/usr/bin/env python2
+'''There are some things to fix like the length of the
+transactions and adding wallet search but this should
+work for any previous file on the blockchain. The list
+of transactions must also end with a blank line and
+'''
+
 from __future__ import print_function
+
 import sys
 import struct
 from binascii import unhexlify, crc32
@@ -16,11 +23,6 @@ try:
 except ImportError:
     pip.main(['install', 'jsonrpclib'])
 import jsonrpclib
-'''There are some things to fix like the length of the
-transactions and adding wallet search but this should
-work for any previous file on the blockchain. The list
-of transactions must also end with a blank line and
-'''
 
 SERVER = jsonrpclib.Server("http://User:Passg@localhost:8332")   # RPC Login
 BLOCKCHAINADDRESS = ''
