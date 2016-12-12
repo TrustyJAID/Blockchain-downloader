@@ -153,7 +153,7 @@ class dlfn():
             FILENAME = transaction
         url = ('https://blockchain.info/tx/%s?show_adv=true' % str(transaction))
         dataout = urllib2.urlopen(url)
-        odata = b''
+        origdata = b''
         data = b''
         hexdata = ''
         atoutput = False
@@ -173,13 +173,13 @@ class dlfn():
                             hexdata += c
                             data += unhexlify(c)
 
-        odata += data
+        origdata += data
         length = struct.unpack('<L', data[0:4])[0]
         data = data[8:8+length]
         if check_magic(hexdata) != '':
             print(check_magic(hexdata))
 
-        self.save_file(odata, FILENAME+"o")
+        self.save_file(origdata, FILENAME+"o")
         self.save_file(data, FILENAME)
         if platform.system() == "Windows":
             self.save_file(transaction+check_magic(hexdata)+"\r\n", "headerfiles.txt")
