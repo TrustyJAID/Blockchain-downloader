@@ -18,11 +18,12 @@ except ImportError:
     print('Fatal: jsonrpclib missing (Try `pip install -r requirements.txt`)')
     sys.exit(-1)
 
-SERVER = jsonrpclib.Server("http://User:Passg@localhost:8332")   # RPC Login
+RPCUSER, RPCPASS = 'User', 'Pass'
+SERVER = jsonrpclib.Server("http://{0}:{1}@localhost:8332".format(RPCUSER, RPCPASS))   # RPC Login
 BLOCKCHAINADDRESS = ''
 global FILENAME
-FILENAME = 'file'
-INDIVIDUALFILE = False
+FILENAME = 'file'       # global default filename setting
+INDIVIDUALFILE = False  # Single flag for single file fore each transaction
 try:
     # Checks for an RPC connection to local blockchain
     SERVER.getinfo()
@@ -39,11 +40,9 @@ def newline():
 class dlfn():
 
     def get_block_data(self, start, end):
-        # This was supposed to go through each block one by one
-        # Then it would check each transaction in each block 
-        # looking for one with a scriptPubKey that matches the 
-        # wallet ID asked for but this takes a long timer
-        # I ran it on 1400 blocks and it took 7 hours to complete
+        """
+        Gets transaction data from block ranges
+        """
         # blockcount = SERVER.getblockcount()     # This will get the total current blocks
         for i in range(start, end):
             start = timer()                     # Start a timer to see how long for each block
@@ -59,24 +58,24 @@ class dlfn():
     def get_data_local(self, transaction):
         """
         Decodes an individual
-        transaction using local blockchain
+        transaction using blockchain RPC
         """
         if INDIVIDUALFILE:
             global FILENAME
             FILENAME = transaction
         rawTx = SERVER.getrawtransaction(transaction)   # gets the raw transaction from RPC
         tx = SERVER.decoderawtransaction(rawTx)         # Decodes the raw transaction from RPC
-        hexdata = ''                                    # string for collecting hex data
-        data = b''                                      # binary data
+        hexdata = ''
+        data = b''
         origdata = ''
-        regexsearch = ''
-        for txout in tx['vout']:                  # Searches json for all vout, failed a few times
-            if regexsearch != '':
-                self.regex_pattern(regexsearch)
-                regexsearch = ''
+        # regexsearch = ''
+        for txout in tx['vout']:
+            # if regexsearch != '':
+                # self.regex_pattern(regexsearch)
+                # regexsearch = ''
 
             for op in txout['scriptPubKey']['asm'].split(' '):  # searches for all OP data
-                regexsearch += op
+                # regexsearch += op
                 try:
                     if not op.startswith('OP_') and len(op) >= 40:
                         hexdata += op.encode('utf8')
@@ -85,20 +84,19 @@ class dlfn():
                     data += op.encode('utf8')
 
         print(transaction + check_magic(hexdata), end='\r')  # would have liked multi line prints
-        origdata = data
-        try:                                            # a lot of transactions failed here trying to
-            length = struct.unpack('<L', data[0:4])[0]  # unpack the binary data so I added parameters
-            data = data[8:8+length]                     # to try and extract all data
-            self.save_file(hexdata, FILENAME+"hex.txt")       # saves all hex data
-            self.save_file(data, FILENAME+"data.txt")         # saves binary data
-            self.save_file(origdata, FILENAME+"origdata.txt")         # saves all binary data
-
-            self.save_file(transaction + check_magic(hexdata) + newline(), "headerfiles.txt")
-        except:
-            self.save_file(hexdata, FILENAME+"fhex.txt")      # This is here to save files when the unpack fails
-            self.save_file(data, FILENAME+"fdata.txt")        # if we can figure out how to solve the unpacking
-            self.save_file(origdata, FILENAME+"origdata.txt")         # saves all binary data
-            self.save_file(transaction + check_magic(hexdata) + newline(), "headerfiles.txt")
+        origdata = data  # keeps the original data without modifying it
+        # try:
+        length = struct.unpack('<L', data[0:4])[0]
+        data = data[8:8+length]
+        self.save_file(hexdata, FILENAME+"hex.txt")       # saves all hex data
+        self.save_file(data, FILENAME+"data.txt")         # saves binary data
+        self.save_file(origdata, FILENAME+"origdata.txt")         # saves all binary data
+        self.save_file(transaction + check_magic(hexdata) + newline(), "headerfiles.txt")
+        # except:
+        #     self.save_file(hexdata, FILENAME+"fhex.txt")      # This is here to save files when the unpack fails
+        #     self.save_file(data, FILENAME+"fdata.txt")        # Fails on certain transactions, not normal
+        #     self.save_file(origdata, FILENAME+"origdata.txt")         # saves all binary data
+        #     self.save_file(transaction + check_magic(hexdata) + newline(), "headerfiles.txt")
         return data
 
     def regex_pattern(self, data):
