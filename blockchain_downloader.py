@@ -32,6 +32,10 @@ except Exception, e:
     LOCAL = False
 
 
+def newline():
+    return '\r\n' if platform.system() == "Windows" else '\n'
+
+
 class dlfn():
 
     def get_block_data(self, start, end):
@@ -88,20 +92,14 @@ class dlfn():
             self.save_file(hexdata, FILENAME+"hex.txt")       # saves all hex data
             self.save_file(data, FILENAME+"data.txt")         # saves binary data
             self.save_file(origdata, FILENAME+"origdata.txt")         # saves all binary data
-            if platform.system() == "Windows":
-                self.save_file(transaction+check_magic(hexdata)+"\r\n", "headerfiles.txt")  # creates a file of transactions and headers
-            else:
-                self.save_file(transaction+check_magic(hexdata)+"\n", "headerfiles.txt")
-            return data
+
+            self.save_file(transaction + check_magic(hexdata) + newline(), "headerfiles.txt")
         except:
             self.save_file(hexdata, FILENAME+"fhex.txt")      # This is here to save files when the unpack fails
             self.save_file(data, FILENAME+"fdata.txt")        # if we can figure out how to solve the unpacking
             self.save_file(origdata, FILENAME+"origdata.txt")         # saves all binary data
-            if platform.system() == "Windows":
-                self.save_file(transaction+check_magic(hexdata)+"\r\n", "headerfiles.txt")
-            else:
-                self.save_file(transaction+check_magic(hexdata)+"\n", "headerfiles.txt")
-            return data
+            self.save_file(transaction + check_magic(hexdata) + newline(), "headerfiles.txt")
+        return data
 
     def regex_pattern(self, data):
         pattern = r"(?:^| )[0-9a-fA-F]+(?:$| )"
