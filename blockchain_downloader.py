@@ -124,8 +124,8 @@ class dlfn():
             length = struct.unpack('<L', data[0:4])[0]  # unpack the binary data so I added parameters
             data = data[8:8+length]                     # to try and extract all data
             self.save_file(hexdata, FILENAME+"hex.txt")       # saves all hex data
-            self.save_file(data, FILENAME+"data.txt")         # saves all binary data
-            self.save_file(origdata, FILENAME+"data.txt")         # saves all binary data
+            self.save_file(data, FILENAME+"data.txt")         # saves binary data
+            self.save_file(origdata, FILENAME+"origdata.txt")         # saves all binary data
             if platform.system() == "Windows":
                 self.save_file(transaction+check_magic(hexdata)+"\r\n", "headerfiles.txt")  # creates a file of transactions and headers
             else:
@@ -134,7 +134,7 @@ class dlfn():
         except:
             self.save_file(hexdata, FILENAME+"fhex.txt")      # This is here to save files when the unpack fails
             self.save_file(data, FILENAME+"fdata.txt")        # if we can figure out how to solve the unpacking
-            self.save_file(origdata, FILENAME+"data.txt")         # saves all binary data
+            self.save_file(origdata, FILENAME+"origdata.txt")         # saves all binary data
             if platform.system() == "Windows":
                 self.save_file(transaction+check_magic(hexdata)+"\r\n", "headerfiles.txt")
             else:
