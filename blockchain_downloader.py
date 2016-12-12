@@ -1,9 +1,5 @@
 #!/usr/bin/env python2
-'''There are some things to fix like the length of the
-transactions and adding wallet search but this should
-work for any previous file on the blockchain. The list
-of transactions must also end with a blank line and
-'''
+
 
 from __future__ import print_function
 
