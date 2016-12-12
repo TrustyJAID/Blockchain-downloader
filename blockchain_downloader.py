@@ -117,24 +117,24 @@ class dlfn():
                 except:
                     data += op.encode('utf8')
 
-        print(transaction + chkfn().check_magic(hexdata), end='\r')  # would have liked multi line prints
+        print(transaction + check_magic(hexdata), end='\r')  # would have liked multi line prints
         try:                                            # a lot of transactions failed here trying to
             length = struct.unpack('<L', data[0:4])[0]  # unpack the binary data so I added parameters
             data = data[8:8+length]                     # to try and extract all data
             self.save_file(hexdata, FILENAME+"hex.txt")       # saves all hex data
             self.save_file(data, FILENAME+"data.txt")         # saves all binary data
             if platform.system() == "Windows":
-                self.save_file(transaction+chkfn().check_magic(hexdata)+"\r\n", "headerfiles.txt")  # creates a file of transactions and headers
+                self.save_file(transaction+check_magic(hexdata)+"\r\n", "headerfiles.txt")  # creates a file of transactions and headers
             else:
-                self.save_file(transaction+chkfn().check_magic(hexdata)+"\n", "headerfiles.txt")
+                self.save_file(transaction+check_magic(hexdata)+"\n", "headerfiles.txt")
             return data
         except:
             self.save_file(hexdata, FILENAME+"fhex.txt")      # This is here to save files when the unpack fails
             self.save_file(data, FILENAME+"fdata.txt")        # if we can figure out how to solve the unpacking
             if platform.system() == "Windows":
-                self.save_file(transaction+chkfn().check_magic(hexdata)+"\r\n", "headerfiles.txt")
+                self.save_file(transaction+check_magic(hexdata)+"\r\n", "headerfiles.txt")
             else:
-                self.save_file(transaction+chkfn().check_magic(hexdata)+"\n", "headerfiles.txt")
+                self.save_file(transaction+check_magic(hexdata)+"\n", "headerfiles.txt")
             return data
 
     def regex_pattern(self, data):
@@ -176,15 +176,15 @@ class dlfn():
         odata += data
         length = struct.unpack('<L', data[0:4])[0]
         data = data[8:8+length]
-        if chkfn().check_magic(hexdata) != '':
-            print(chkfn().check_magic(hexdata))
+        if check_magic(hexdata) != '':
+            print(check_magic(hexdata))
 
         self.save_file(odata, FILENAME+"o")
         self.save_file(data, FILENAME)
         if platform.system() == "Windows":
-            self.save_file(transaction+chkfn().check_magic(hexdata)+"\r\n", "headerfiles.txt")
+            self.save_file(transaction+check_magic(hexdata)+"\r\n", "headerfiles.txt")
         else:
-            self.save_file(transaction+chkfn().check_magic(hexdata)+"\n", "headerfiles.txt")
+            self.save_file(transaction+check_magic(hexdata)+"\n", "headerfiles.txt")
         return data
 
     def get_tx_list(self, tx_list):
@@ -212,118 +212,52 @@ class dlfn():
         output.close()
 
 
-class chkfn():
+DEFAULT_MAGIC = {"DOC Header":["d0cf11e0a1b11ae1"],
+                 "DOC Footer":["576f72642e446f63756d656e742e"],
+                 "XLS Header":["d0cf11e0a1b11ae1"],
+                 "XLS Footer":["feffffff000000000000000057006f0072006b0062006f006f006b00"],
+                 "PPT Header":["d0cf11e0a1b11ae1"],
+                 "PPT Footer":["a0461df0"],
+                 "ZIP Header":["504b030414"],
+                 "ZIP Footer":["504b050600"],
+                 "ZIPLock Footer":["504b030414000100630000000000"],
+                 "JPG Header":["ffd8ffe000104a464946000101"],
+                 "GIF Header":["474946383961"],
+                 "GIF Footer":["2100003b00"],
+                 "PDF Header":["25504446"],
+                 "PDF Header":["2623323035"],
+                 "PDF Footer":["2525454f46"],
+                 "Torrent Header":["616e6e6f756e6365"],
+                 "TAR/GZ Header":["1f8b"],
+                 "FLI Header":["0011af"],
+                 "EPUB Header":["504b03040a000200"],
+                 "PNG Header":["89504e470d0a1a0a"],
+                 "8192 Header":["6d51514e42"],
+                 "4096 Header":["6d51494e4246672f"],
+                 "2048 Header":["952e3e2e584b7a"],
+                 "Secret Header":["526172211a0700"],
+                 "RAR Header":["6d51454e424667"],
+                 "UTF8 header":["efedface"],
+                 "OGG Header":["4f676753"],
+                 "WAV Header":["42494646", "57415645"],
+                 "AVI Header":["42494646", "41564920"],
+                 "MIDI Header":["4d546864"],
+                 "7z Header":["377abcaf271c"],
+                 "7z Footer":["0000001706"],
+                 "Wikileaks":["57696b696c65616b73"],
+                 "Julian Assange":["4a756c69616e20417373616e6765"],
+                 "Mendax":["4d656e646178"]}
 
-    counter = 0
-    hexcode2 = ''
-    hexcoderev = ''
 
-    def check_magic(self, hexcode):
-        """
-        This is the hex header search function
-        It searches the line of hex
-        for any of these known header hex values
-        Todo: add private PGP 2048, 4096, 8192 headers
-        also add two transaction hex search in cases
-        where header data is split between two transactions
-        first attempt was to concactenate all hex data every time
-        but that took a long time to do. At most two or three transactions
-        will contain the header
-        Also it might be worth adding more function to the names
-        such as including all possible capitalization hex
-        TODO: finish double transaction check and reverse header search
-        """
-        self.hexcode2 += hexcode
-        if self.counter == 1:
-            self.counter = 0
+def check_magic(hexcode, magic=DEFAULT_MAGIC):
+    '''Returns a string listing magic bytes found in the given hexcode and compared against the magic dictionary of keys to lists of values.
 
-        filetype = ''
-        if "D0CF11E0A1B11AE1".lower() in hexcode:
-            filetype += "DOC Header Found "         # DOC Header
-        if "576F72642E446F63756D656E742E".lower() in hexcode:
-            filetype += "DOC Footer Found "         # DOC Footer
-        if "D0CF11E0A1B11AE1".lower() in hexcode:
-            filetype += "XLS Header Found "         # XLS Header
-        if "FEFFFFFF000000000000000057006F0072006B0062006F006F006B00".lower() in hexcode:
-            filetype += "XLS Footer Found "         # XLS Footer
-        if "D0CF11E0A1B11AE1".lower() in hexcode:
-            filetype += "PPT Header Found "         # PPT Header
-        if "A0461DF0".lower() in hexcode:
-            filetype += "PPT Footer Found "         # PPT Footer
-        if "504B030414".lower() in hexcode:
-            filetype += "ZIP Header Found "         # ZIP Header
-        if "504B050600".lower() in hexcode:
-            filetype += "ZIP Footer Found "         # ZIP Footer
-        if "504B030414000100630000000000".lower() in hexcode:
-            filetype += "ZIPLock Footer Found "     # ZLocked Encrypted
-        if "FFD8FFE000104A464946000101".lower() in hexcode:
-            filetype += "JPG Header Found "         # JPG Header
-        if "474946383961".lower() in hexcode:
-            filetype += "GIF Header Found "         # GIF Header
-        if "474946383761".lower() in hexcode:
-            filetype += "GIF Header Found "         # GIF Header
-        if "2100003B00".lower() in hexcode:
-            filetype += "GIF Footer Found "         # GIF Footer
-        if "25504446".lower() in hexcode:
-            filetype += "PDF Header Found "         # PDF Header
-        if "2623323035".lower() in hexcode:
-            filetype += "PDF Header Found "         # PDF Header
-        if "2525454F46".lower() in hexcode:
-            filetype += "PDF Footer Found "         # PDF Footer
-        if "616E6E6F756E6365".lower() in hexcode:
-            filetype += "Torrent Header Found "     # Torrent Header
-        if "1F8B".lower() in hexcode:
-            filetype += ".TAR.GZ Header Found "     # TAR/GZ Header | Going to have lots of false positives
-        if "0011AF".lower() in hexcode:
-            filetype += "FLI Header Found "         # FLI Header
-        if "504B03040A000200".lower() in hexcode:
-            filetype += "EPUB Header Found "        # EPUB Header
-        if "89504E470D0A1A0A".lower() in hexcode:
-            filetype += "PNG Header Found "         # PNG Header
-        if "6D51514E42".lower() in hexcode:
-            filetype += "8192PGP Header Found "     # 8192 Header
-        if "6D51494E4246672F".lower() in hexcode:
-            filetype += "4096PGP Header Found "     # 4096 Header
-        if "952e3e2e584b7a".lower() in hexcode:
-            filetype += "2048PGP Header Found "     # 2048 Header
-        if "526172211A0700".lower() in hexcode:
-            filetype += "Secret Header Found"       # Secret Header
-        if "6D51454E424667".lower() in hexcode:
-            filetype += "RAR Header Found"          # RAR Header
-        if "EFEDFACE".lower() in hexcode:
-            filetype += "UTF8 Header Found"         # UTF8 header
-        if "4F676753".lower() in hexcode:
-            filetype += "OGG Header Found"          # OGG Header
-        if "42494646".lower() in hexcode and "57415645".lower() in hexcode:
-            filetype += "WAV Header Found"          # WAV Header
-        if "42494646".lower() in hexcode and "41564920".lower() in hexcode:
-            filetype += "AVI Header Found"          # AVI Header
-        if "4D546864".lower() in hexcode:
-            filetype += "MIDI Header Found"         # MIDI Header
-        if "377ABCAF271C".lower() in hexcode:
-            filetype += "7z Header Found"           # 7z Header
-        if "0000001706".lower() in hexcode:
-            filetype += "7z Footer Found"           # 7z Footer
-        if "57696b696c65616b73".lower() in hexcode:
-            filetype += "Wikileaks"                 # Wikileaks
-        if "4A756C69616E20417373616E6765".lower() in hexcode:
-            filetype += "Julian Assange"            # Julain Assange
-        if "4d656e646178".lower() in hexcode:
-            filetype += "Mendax"                    # Mendax
-        else:
-            filetype += ""
-        chkfn.counter += 1
-        return filetype
-
-    def checksum(self, data):
-        """
-        Checksum for multi file upload data
-        """
-
-        checksum = struct.unpack('<L', data[4:8])[0]
-        if checksum != crc32(data):
-            print('Checksum mismatch; expected %d but calculated %d' % (checksum, crc32(data)))
-        return checksum
+    This is the hex header search function.  It searches the line of hex for any of these known header hex values.
+    TODO: add private PGP 2048, 4096, 8192 headers
+    '''
+    return ' '.join('{} Found'.format(key)
+                   for key, values in magic.iteritems()
+                   if all(v.lower() in hexcode for v in values))
 
 
 class __main__():
