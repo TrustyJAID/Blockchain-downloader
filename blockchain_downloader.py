@@ -7,22 +7,22 @@ of transactions must also end with a blank line and
 
 from __future__ import print_function
 
+from binascii import unhexlify, crc32
+from timeit import default_timer as timer
+
+import json
+import platform
 import sys
 import struct
-from binascii import unhexlify, crc32
-import urllib2
-import imp
-import pip
-from timeit import default_timer as timer
-import platform
-import json
 import time
 import re
+import urllib2
+
 try:
-    imp.find_module('jsonrpclib')
+    import jsonrpclib
 except ImportError:
-    pip.main(['install', 'jsonrpclib'])
-import jsonrpclib
+    print('Fatal: jsonrpclib missing (Try `pip install -r requirements.txt`)')
+    sys.exit(-1)
 
 SERVER = jsonrpclib.Server("http://User:Passg@localhost:8332")   # RPC Login
 BLOCKCHAINADDRESS = ''
