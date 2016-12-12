@@ -5,3 +5,4 @@ test:
 
 clean:
 	rm -f file fileo headerfiles.txt
+	find . -type f -name '*~' -delete
