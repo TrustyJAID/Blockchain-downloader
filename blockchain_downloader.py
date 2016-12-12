@@ -36,38 +36,6 @@ except Exception, e:
 
 class dlfn():
 
-    def get_tx_from_online(self, address):
-        error = True
-
-        print("Fetching transactions from", address)
-        while error:
-            try:
-                dat = urllib2.urlopen("https://blockchain.info/rawaddr/" + address)
-                error = False
-            except:
-                print("Trying to open address", address)
-                time.sleep(4)
-        n_tx = json.loads(dat.read().decode())["n_tx"]
-
-        txlist = []
-        offset = 0
-        while True:
-            try:
-                dat = urllib2.urlopen("https://blockchain.info/rawaddr/" + address + "?format=json&limit=50&offset=" + str(offset))
-                txs = json.loads(dat.read().decode())["txs"]
-                dat.close()
-                for tx in txs:
-                    txlist.append(tx["hash"].encode('ascii'))
-                offset += 50
-            except:
-                pass
-
-            if len(txlist) == n_tx:
-                break
-            print("Progress (if it gets 'stuck' wait a minute or two):", len(txlist), "/", n_tx)
-
-        return txlist
-
     def get_block_data(self, start, end):
         # This was supposed to go through each block one by one
         # Then it would check each transaction in each block 
@@ -269,6 +237,41 @@ def check_magic(hexcode, magic=DEFAULT_MAGIC):
                    if all(v.lower() in hexcode for v in values))
 
 
+def get_blockchain_rawaddr(address, limit=50, offset=0, silent=True):
+    error = True
+    while error:
+        try:
+            dat = urllib2.urlopen('https://blockchain.info/rawaddr/{}?format=json&limit={}&offset={}'.format(address, limit, offset))
+            error = False
+        except urllib2.URLError, e:
+            if not silent:
+                print('Error: Trying to open address {} from blockchain.info: '.format(address, e.reason))
+    return json.loads(dat.read().decode())
+
+
+def get_txs_from_blockchain_json(data):
+    return [tx.get('hash').encode('ascii') for tx in data.get('txs', {})]
+
+
+def get_tx_from_online(address, limit=50, sleep=1):
+    print("Fetching transactions from", address)
+
+    offset = 0
+    data = get_blockchain_rawaddr(address, limit=limit, offset=offset, silent=False)
+    n_tx = data['n_tx']
+    txlist = get_txs_from_blockchain_json(data)
+
+    while len(txlist) < n_tx:
+        print("Progress (if it gets 'stuck' wait a minute or two): {} / {}".format(len(txlist), n_tx))
+        offset += 50
+        txlist.extend(get_txs_from_blockchain_json(get_blockchain_rawaddr(address, limit=limit, offset=offset, silent=True)))
+        # Lets be nice to blockchain.info
+        if sleep:
+            time.sleep(sleep)
+
+    return txlist
+
+
 class __main__():
     """
     Start of the main program
@@ -314,7 +317,7 @@ class __main__():
     elif len(BLOCKCHAINADDRESS) < 64 and BLOCKCHAINADDRESS.startswith('1'):
         # Checks if wallet on main blockchain
         print("This is a wallet ID, searching...")
-        dlfn.get_tx_from_online(BLOCKCHAINADDRESS)
+        get_tx_from_online(BLOCKCHAINADDRESS)
 
     else:
         if LOCAL:
