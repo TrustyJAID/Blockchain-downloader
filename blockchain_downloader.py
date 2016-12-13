@@ -67,9 +67,16 @@ class dlfn():
         tx = SERVER.decoderawtransaction(rawTx)         # Decodes the raw transaction from RPC
         hexdata = ''
         revhex = ''
+        inhex = ''
+        indata = b''
         data = b''
         origdata = ''
         # regexsearch = ''
+        for txin in tx['vin']:
+            for inop in txin['scriptSig']['hex'].split():
+                inhex += inop
+                indata += unhexlify(inop.encode('utf8'))
+
         for txout in tx['vout']:
             # if regexsearch != '':
                 # self.regex_pattern(regexsearch)
@@ -90,6 +97,8 @@ class dlfn():
         # try:
         length = struct.unpack('<L', data[0:4])[0]
         data = data[8:8+length]
+        self.save_file(indata, FILENAME+"indata.txt")     # saves the input script
+        self.save_file(inhex, FILENAME+"inhex.txt")     # saves the input hex
         self.save_file(hexdata, FILENAME+"hex.txt")       # saves all hex data
         self.save_file(data, FILENAME+"data.txt")         # saves binary data
         self.save_file(origdata, FILENAME+"origdata.txt")         # saves all binary data
@@ -118,16 +127,31 @@ class dlfn():
         url = ('https://blockchain.info/tx/%s?show_adv=true' % str(transaction))
         dataout = urllib2.urlopen(url)
         origdata = b''
+        indata = b''
+        inhex = ''
         data = b''
         hexdata = ''
         atoutput = False
+        inoutput = False
         for line in dataout:
 
             if b'Output Scripts' in line:
                 atoutput = True
 
+            if b'Input Scripts' in line:
+                inoutput = False
+
             if b'</table>' in line:
                 atoutput = False
+
+            if inoutput:
+                if len(line) > 100:
+                    chunks = line.split(b' ')
+                    for c in chunks:
+                        print(c)
+                        if b'O' not in c and b'\n' not in c and b'>' not in c and b'<' not in c:
+                            inhex += c
+                            indata += unhexlify(c.encode('utf8'))
 
             if atoutput:
                 if len(line) > 100:
@@ -141,15 +165,13 @@ class dlfn():
         length = struct.unpack('<L', data[0:4])[0]
         data = data[8:8+length]
         if check_magic(hexdata) != '':
-            print(check_magic(hexdata))
+            print(check_magic(inhex)+" input")
+            print(check_magic(hexdata)+" output")
 
-        self.save_file(origdata, FILENAME+"o")
-        self.save_file(data, FILENAME)
-        if platform.system() == "Windows":
-            self.save_file(transaction+check_magic(hexdata)+"\r\n", "headerfiles.txt")
-        else:
-            self.save_file(transaction+check_magic(hexdata)+"\n", "headerfiles.txt")
-        return data
+        self.save_file(origdata, FILENAME+"orig.txt")
+        self.save_file(data, FILENAME+".txt")
+        self.save_file(indata, FILENAME+"in.txt")
+        self.save_file(transaction+check_magic(hexdata)+newline(), "headerfiles.txt")
 
     def get_tx_list(self, tx_list):
         """
