@@ -18,7 +18,7 @@ except ImportError:
     print('Fatal: jsonrpclib missing (Try `pip install -r requirements.txt`)')
     sys.exit(-1)
 
-RPCUSER, RPCPASS = 'Damez', 'something'
+RPCUSER, RPCPASS = 'User', 'Pass'
 SERVER = jsonrpclib.Server("http://{0}:{1}@localhost:8332".format(RPCUSER, RPCPASS))   # RPC Login
 BLOCKCHAINADDRESS = ''
 global FILENAME
