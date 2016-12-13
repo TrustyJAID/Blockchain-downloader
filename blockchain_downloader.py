@@ -11,6 +11,7 @@ import struct
 import time
 import re
 import urllib2
+import zlib
 
 try:
     import jsonrpclib
@@ -71,7 +72,6 @@ class dlfn():
         indata = b''
         data = b''
         origdata = ''
-        # regexsearch = ''
         for txin in tx['vin']:
             try:
                 for inop in txin['scriptSig']['hex'].split():  # Gathers the input script
@@ -80,10 +80,6 @@ class dlfn():
             except KeyError:
                 pass
         for txout in tx['vout']:
-            # if regexsearch != '':
-                # self.regex_pattern(regexsearch)
-                # regexsearch = ''
-
             for op in txout['scriptPubKey']['asm'].split(' '):  # searches for all OP data
                 # regexsearch += op
                 try:
@@ -96,20 +92,16 @@ class dlfn():
         print(transaction + check_magic(hexdata), end='\r')  # would have liked multi line prints
         print(transaction + check_magic(revhex), end='\r')  # would have liked multi line prints
         origdata = data  # keeps the original data without modifying it
-        # try:
         length = struct.unpack('<L', data[0:4])[0]
         data = data[8:8+length]
         self.save_file(indata, FILENAME+"indata.txt")     # saves the input script
-        self.save_file(inhex, FILENAME+"inhex.txt")     # saves the input hex
-        self.save_file(hexdata, FILENAME+"hex.txt")       # saves all hex data
+        self.save_file(inhex, "output/"+FILENAME+"inhex.txt")     # saves the input hex
+        self.save_file(hexdata, "output/"+FILENAME+"hex.txt")       # saves all hex data
         self.save_file(data, FILENAME+"data.txt")         # saves binary data
         self.save_file(origdata, FILENAME+"origdata.txt")         # saves all binary data
         self.save_file(transaction + check_magic(hexdata) + newline(), "headerfiles.txt")
-        # except:
-        #     self.save_file(hexdata, FILENAME+"fhex.txt")      # This is here to save files when the unpack fails
-        #     self.save_file(data, FILENAME+"fdata.txt")        # Fails on certain transactions, not normal
-        #     self.save_file(origdata, FILENAME+"origdata.txt")         # saves all binary data
-        #     self.save_file(transaction + check_magic(hexdata) + newline(), "headerfiles.txt")
+        self.save_file(transaction + check_magic(inhex) + newline(), "inheaderfiles.txt")
+
         return data
 
     def regex_pattern(self, data):
@@ -207,6 +199,15 @@ class dlfn():
         if checksum != crc32(data):
             print('Checksum mismatch; expected %d but calculated %d' % (checksum, crc32(data)))
         return checksum
+
+    def crc(fileName):
+        prev = 0
+        for eachLine in open(fileName, "rb"):
+            prev = zlib.crc32(eachLine, prev)
+            print (prev)
+        return "%X" % (prev & 0xFFFFFFFF)
+
+    # print (crc('example.zip'))
 
 
 DEFAULT_MAGIC = {"DOC Header": ["d0cf11e0a1b11ae1"],
