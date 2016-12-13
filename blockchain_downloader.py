@@ -73,7 +73,7 @@ class dlfn():
         origdata = ''
         # regexsearch = ''
         for txin in tx['vin']:
-            for inop in txin['scriptSig']['hex'].split():
+            for inop in txin['scriptSig']['hex'].split():  # Gathers the input script
                 inhex += inop
                 indata += unhexlify(inop.encode('utf8'))
 
