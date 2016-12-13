@@ -18,7 +18,7 @@ except ImportError:
     print('Fatal: jsonrpclib missing (Try `pip install -r requirements.txt`)')
     sys.exit(-1)
 
-RPCUSER, RPCPASS = 'User', 'Pass'
+RPCUSER, RPCPASS = 'Damez', 'something'
 SERVER = jsonrpclib.Server("http://{0}:{1}@localhost:8332".format(RPCUSER, RPCPASS))   # RPC Login
 BLOCKCHAINADDRESS = ''
 global FILENAME
@@ -73,10 +73,12 @@ class dlfn():
         origdata = ''
         # regexsearch = ''
         for txin in tx['vin']:
-            for inop in txin['scriptSig']['hex'].split():  # Gathers the input script
-                inhex += inop
-                indata += unhexlify(inop.encode('utf8'))
-
+            try:
+                for inop in txin['scriptSig']['hex'].split():  # Gathers the input script
+                    inhex += inop
+                    indata += unhexlify(inop.encode('utf8'))
+            except KeyError:
+                pass
         for txout in tx['vout']:
             # if regexsearch != '':
                 # self.regex_pattern(regexsearch)
