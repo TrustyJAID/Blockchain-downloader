@@ -95,8 +95,8 @@ class dlfn():
         length = struct.unpack('<L', data[0:4])[0]
         data = data[8:8+length]
         self.save_file(indata, FILENAME+"indata.txt")     # saves the input script
-        self.save_file(inhex, "output/"+FILENAME+"inhex.txt")     # saves the input hex
-        self.save_file(hexdata, "output/"+FILENAME+"hex.txt")       # saves all hex data
+        self.save_file(inhex, FILENAME+"inhex.txt")     # saves the input hex
+        self.save_file(hexdata, FILENAME+"hex.txt")       # saves all hex data
         self.save_file(data, FILENAME+"data.txt")         # saves binary data
         self.save_file(origdata, FILENAME+"origdata.txt")         # saves all binary data
         self.save_file(transaction + check_magic(hexdata) + newline(), "headerfiles.txt")
