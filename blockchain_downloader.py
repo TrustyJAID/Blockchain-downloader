@@ -66,6 +66,7 @@ class dlfn():
         rawTx = SERVER.getrawtransaction(transaction)   # gets the raw transaction from RPC
         tx = SERVER.decoderawtransaction(rawTx)         # Decodes the raw transaction from RPC
         hexdata = ''
+        revhex = ''
         data = b''
         origdata = ''
         # regexsearch = ''
@@ -82,8 +83,9 @@ class dlfn():
                         data += unhexlify(op.encode('utf8'))
                 except:
                     data += op.encode('utf8')
-
+        revhex = "".join(reversed([hexdata[i:i+2] for i in range(0, len(hexdata), 2)]))  # reverses the hex
         print(transaction + check_magic(hexdata), end='\r')  # would have liked multi line prints
+        print(transaction + check_magic(revhex), end='\r')  # would have liked multi line prints
         origdata = data  # keeps the original data without modifying it
         # try:
         length = struct.unpack('<L', data[0:4])[0]
