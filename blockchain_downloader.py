@@ -45,13 +45,12 @@ class dlfn():
         Gets transaction data from block ranges
         """
         # blockcount = SERVER.getblockcount()     # This will get the total current blocks
-        for i in range(start, end):
+        for i in range(int(start), int(end)):
             start = timer()                     # Start a timer to see how long for each block
-            # print ("Searching block: {0} for wallet: {1} for wallet: ".format(i, walletid))
+            print ("Searching block: {0}: ".format(i), end='\r')
             blockhash = SERVER.getblockhash(i)  # Gets the block hash from the block index number
             for tx in SERVER.getblock(blockhash)['tx']:  # Gets all transactions from block hash
-                # print(tx)                                 # Prints all transactions checked
-                dlfn.get_data_local(tx)                       # currently checks all transactions for data
+                self.get_data_local(tx)                       # currently checks all transactions for data
 
             endtimer = timer() - start
             print(endtimer)
@@ -81,7 +80,6 @@ class dlfn():
                 pass
         for txout in tx['vout']:
             for op in txout['scriptPubKey']['asm'].split(' '):  # searches for all OP data
-                # regexsearch += op
                 try:
                     if not op.startswith('OP_') and len(op) >= 40:
                         hexdata += op.encode('utf8')
@@ -89,18 +87,19 @@ class dlfn():
                 except:
                     data += op.encode('utf8')
         revhex = "".join(reversed([hexdata[i:i+2] for i in range(0, len(hexdata), 2)]))  # reverses the hex
-        print(transaction + check_magic(hexdata), end='\r')  # would have liked multi line prints
-        print(transaction + check_magic(revhex), end='\r')  # would have liked multi line prints
+        # print(transaction + check_magic(hexdata), end='\r')  # would have liked multi line prints
+        # print(transaction + check_magic(revhex), end='\r')  # would have liked multi line prints
         origdata = data  # keeps the original data without modifying it
         length = struct.unpack('<L', data[0:4])[0]
         data = data[8:8+length]
+        # self.checksum(data)
         self.save_file(indata, FILENAME+"indata.txt")     # saves the input script
-        self.save_file(inhex, FILENAME+"inhex.txt")     # saves the input hex
-        self.save_file(hexdata, FILENAME+"hex.txt")       # saves all hex data
+        # self.save_file(inhex, FILENAME+"inhex.txt")     # saves the input hex
+        # self.save_file(hexdata, FILENAME+"hex.txt")       # saves all hex data
         self.save_file(data, FILENAME+"data.txt")         # saves binary data
         self.save_file(origdata, FILENAME+"origdata.txt")         # saves all binary data
-        self.save_file(transaction + check_magic(hexdata) + newline(), "headerfiles.txt")
-        self.save_file(transaction + check_magic(inhex) + newline(), "inheaderfiles.txt")
+        # self.save_file(transaction + check_magic(hexdata) + newline(), "headerfiles.txt")
+        # self.save_file(transaction + check_magic(inhex) + newline(), "inheaderfiles.txt")
 
         return data
 
@@ -328,7 +327,7 @@ class __main__():
         # This checks if you're giving a list of transactions or just one
         dlfn.get_tx_list(BLOCKCHAINADDRESS)
 
-    elif BLOCKCHAINADDRESS.isdigit() and BLOCKCHAINADDRESS < SERVER.getblockheight() and LOCAL:
+    elif sys.argv[1].isdigit() and LOCAL:
         if len(sys.argv) == 3:
             dlfn.get_block_data(sys.argv[1], sys.argv[2])
         else:
