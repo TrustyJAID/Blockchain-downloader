@@ -36,7 +36,7 @@ class __main__():
     Start of the main program
     This could theoretically all be made in a GUI
     """
-    dlfn = dlfn()
+    dlfn = dlfn(SERVER)
     if len(sys.argv) == 3:
         # This checks if two arguments were given and
         # utilises them as the transaction then the filename to save

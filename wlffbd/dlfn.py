@@ -21,9 +21,10 @@ def newline():
 class dlfn():
 
     FILENAME = ''
+    SERVER = None
 
     
-    def __init__(self, FILENAME='file'):
+    def __init__(self, SERVER=None, FILENAME='file'):
         self.FILENAME = FILENAME
 
 
@@ -31,12 +32,12 @@ class dlfn():
         """
         Gets transaction data from block ranges
         """
-        # blockcount = SERVER.getblockcount()     # This will get the total current blocks
+        # blockcount = self.SERVER.getblockcount()     # This will get the total current blocks
         for i in range(int(start), int(end)):
             start = timer()                     # Start a timer to see how long for each block
             print ("Searching block: {0}: ".format(i), end='\r')
-            blockhash = SERVER.getblockhash(i)  # Gets the block hash from the block index number
-            for tx in SERVER.getblock(blockhash)['tx']:  # Gets all transactions from block hash
+            blockhash = self.SERVER.getblockhash(i)  # Gets the block hash from the block index number
+            for tx in self.SERVER.getblock(blockhash)['tx']:  # Gets all transactions from block hash
                 self.get_data_local(tx)                       # currently checks all transactions for data
 
             endtimer = timer() - start
@@ -49,8 +50,8 @@ class dlfn():
         """
         if INDIVIDUALFILE:
             self.FILENAME = transaction
-        rawTx = SERVER.getrawtransaction(transaction)   # gets the raw transaction from RPC
-        tx = SERVER.decoderawtransaction(rawTx)         # Decodes the raw transaction from RPC
+        rawTx = self.SERVER.getrawtransaction(transaction)   # gets the raw transaction from RPC
+        tx = self.SERVER.decoderawtransaction(rawTx)         # Decodes the raw transaction from RPC
         hexdata = ''
         revhex = ''
         inhex = ''
