@@ -9,9 +9,10 @@ from timeit import default_timer as timer
 
 import platform
 import struct
-import re
 import urllib2
 import zlib
+import hashlib
+import jsonrpclib
 
 
 def newline():
@@ -19,11 +20,11 @@ def newline():
 
 
 class dlfn():
-
     FILENAME = ''
-    SERVER = None
+    RPCUSER, RPCPASS = open('rpclogin.txt', 'rb').read().split()
+    SERVER = jsonrpclib.Server("http://{0}:{1}@localhost:8332".format(RPCUSER, RPCPASS))   # RPC Login
 
-    def __init__(self, SERVER=None, FILENAME='file'):
+    def __init__(self, SERVER, FILENAME='file'):
         self.FILENAME = FILENAME
 
     def get_block_data(self, start, end):
@@ -43,8 +44,7 @@ class dlfn():
 
     def get_data_local(self, transaction, INDIVIDUALFILE=False):
         """
-        Decodes an individual
-        transaction using blockchain RPC
+        Downloads data from Bitcoin Core RPC
         """
         if INDIVIDUALFILE:
             self.FILENAME = transaction
@@ -71,9 +71,9 @@ class dlfn():
                         data += unhexlify(op.encode('utf8'))
                 except:
                     data += op.encode('utf8')
+        self.sha256_sum(data)
+        self.sha256_sum(indata)
         revhex = "".join(reversed([hexdata[i:i+2] for i in range(0, len(hexdata), 2)]))  # reverses the hex
-        print(transaction + check_magic(hexdata), end='\r')  # would have liked multi line prints
-        print(transaction + check_magic(revhex), end='\r')  # would have liked multi line prints
         origdata = data  # keeps the original data without modifying it
         length = struct.unpack('<L', data[0:4])[0]
         data = data[8:8+length]
@@ -83,21 +83,22 @@ class dlfn():
         # self.save_file(hexdata, self.FILENAME+"hex.txt")       # saves all hex data
         self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
         self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
-        self.save_file(transaction + check_magic(hexdata) + newline(), "headerfiles.txt")
-        self.save_file(transaction + check_magic(inhex) + newline(), "inheaderfiles.txt")
+        if check_magic(hexdata) != '':
+            print(transaction + check_magic(hexdata)+" output")
+            self.save_file(transaction + check_magic(hexdata) + newline(), "headerfiles.txt")
+        if check_magic(revhex) != '':
+            print(transaction + check_magic(revhex)+" reverse")
+            self.save_file(transaction + check_magic(inhex) + newline(), "revheaderfiles.txt")
+        if check_magic(inhex) != '':
+            print(transaction + check_magic(inhex)+" input")
+            self.save_file(transaction + check_magic(inhex) + newline(), "inheaderfiles.txt")
 
         return data
 
-    def regex_pattern(self, data):
-        pattern = r"(?:^| )[0-9a-fA-F]+(?:$| )"
-        matchList = []
-        matchList += re.search(pattern, data)
-        return matchList
-
     def get_data_online(self, transaction, INDIVIDUALFILE=False):
         """
-        This function checks the data
-        in the given blockhash using blockchain.info
+        Downloads the data from blockchain.info
+        TODO: Change the data collection to json
         """
         if INDIVIDUALFILE:
             self.FILENAME = transaction
@@ -177,19 +178,42 @@ class dlfn():
 
     def checksum(self, data):
         """
-        Checksum for multi file upload data
+        verify's the checksum for files
+        uploaded using the satoshi uploader
+        does not work without the full file
         """
-
         checksum = struct.unpack('<L', data[4:8])[0]
         if checksum != crc32(data):
             print('Checksum mismatch; expected %d but calculated %d' % (checksum, crc32(data)))
         return checksum
 
-    def crc(fileName):
+    def crc(self, data):
+        """
+        Should be used to determine if data
+        is garbage or is part of the file
+        """
         prev = 0
-        for eachLine in open(fileName, "rb"):
+        for eachLine in open(data, "rb"):
             prev = zlib.crc32(eachLine, prev)
             print (prev)
         return "%X" % (prev & 0xFFFFFFFF)
 
-    # print (crc('example.zip'))
+    def sha256_sum(self, data):
+        """
+        Builds and checks a list of hashes from data
+        downloaded from the blockchain
+        useful to find duplicate data
+        although the more I think about ite
+        the less likely I think it's possible
+        """
+        hashsum = hashlib.sha256(data)
+        hashexists = False
+        with open("hashindex.txt", "a+") as hashfile:
+            for hashes in hashfile:
+                if hashsum.hexdigest() == hashes.strip():
+                    hashexists = True
+
+            if not hashexists:
+                hashfile.writelines(hashsum.hexdigest()+newline())
+        hashfile.close()
+        return hashsum.hexdigest()

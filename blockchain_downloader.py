@@ -16,7 +16,7 @@ except ImportError:
     print('Fatal: jsonrpclib missing (Try `pip install -r requirements.txt`)')
     sys.exit(-1)
 
-RPCUSER, RPCPASS = 'User', 'Pass'
+RPCUSER, RPCPASS = open('rpclogin.txt', 'r').read().split()
 SERVER = jsonrpclib.Server("http://{0}:{1}@localhost:8332".format(RPCUSER, RPCPASS))   # RPC Login
 BLOCKCHAINADDRESS = ''
 global FILENAME
@@ -44,7 +44,7 @@ class __main__():
             BLOCKCHAINADDRESS = str(sys.argv[1])
             FILENAME = str(sys.argv[2])
         except IndexError:
-            print("No address of filename")
+            print("No address or filename")
 
     elif len(sys.argv) == 2:
         # This checks if one argument was given
@@ -76,7 +76,7 @@ class __main__():
     elif len(BLOCKCHAINADDRESS) < 64 and BLOCKCHAINADDRESS.startswith('1'):
         # Checks if wallet on main blockchain
         print("This is a wallet ID, searching...")
-        print("Fetching transactions from", BLOCKCHAINADDRESS)        
+        print("Fetching transactions from", BLOCKCHAINADDRESS)
         get_tx_from_online(BLOCKCHAINADDRESS,
                            callback=lambda txlist, n_tx: print("Progress (if it gets 'stuck' wait a minute or two): {} / {}".format(len(txlist), n_tx)))
 
