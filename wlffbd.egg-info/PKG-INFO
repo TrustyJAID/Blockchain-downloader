@@ -1,0 +1,14 @@
+Metadata-Version: 1.0
+Name: wlffbd
+Version: 0.1.0
+Summary: WikiLeaks Freedom Force Blockchain Downlloader
+Home-page: htts://github.com/WikiLeaksFreedomForce
+Author: WikiLeaks Freedom Force
+Author-email: UNKNOWN
+License: UNKNOWN
+Description: WikiLeaks Freedom Force presents the python blockchain downloader tool and library: wlffbd
+        
+        This can be used to scan for and download data from the bitcoin blockchain.
+        Particularly, Wikileaks' known data formats are supported, but potentially more.
+Keywords: wikileaks wiki leaks blockchain cryptography bitcoin
+Platform: Any
