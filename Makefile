@@ -43,6 +43,7 @@ init:
 init-dev:
 	[ -e $(VENV_NAME) ] || $(VENV_CMD) -p $(VENV_PYTHON) $(VENV_NAME)
 	$(VENV_PIP) install -r requirements-dev.txt
+	$(VENV_PIP) install -e .
 
 ## Lint the code with pyflakes
 lint:
