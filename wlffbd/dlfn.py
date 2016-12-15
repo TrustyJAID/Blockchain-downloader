@@ -23,10 +23,8 @@ class dlfn():
     FILENAME = ''
     SERVER = None
 
-    
     def __init__(self, SERVER=None, FILENAME='file'):
         self.FILENAME = FILENAME
-
 
     def get_block_data(self, start, end):
         """
@@ -74,8 +72,8 @@ class dlfn():
                 except:
                     data += op.encode('utf8')
         revhex = "".join(reversed([hexdata[i:i+2] for i in range(0, len(hexdata), 2)]))  # reverses the hex
-        # print(transaction + check_magic(hexdata), end='\r')  # would have liked multi line prints
-        # print(transaction + check_magic(revhex), end='\r')  # would have liked multi line prints
+        print(transaction + check_magic(hexdata), end='\r')  # would have liked multi line prints
+        print(transaction + check_magic(revhex), end='\r')  # would have liked multi line prints
         origdata = data  # keeps the original data without modifying it
         length = struct.unpack('<L', data[0:4])[0]
         data = data[8:8+length]
@@ -85,8 +83,8 @@ class dlfn():
         # self.save_file(hexdata, self.FILENAME+"hex.txt")       # saves all hex data
         self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
         self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
-        # self.save_file(transaction + check_magic(hexdata) + newline(), "headerfiles.txt")
-        # self.save_file(transaction + check_magic(inhex) + newline(), "inheaderfiles.txt")
+        self.save_file(transaction + check_magic(hexdata) + newline(), "headerfiles.txt")
+        self.save_file(transaction + check_magic(inhex) + newline(), "inheaderfiles.txt")
 
         return data
 

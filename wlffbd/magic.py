@@ -33,6 +33,7 @@ DEFAULT_MAGIC = {"DOC Header": ["d0cf11e0a1b11ae1"],
                  "MIDI Header": ["4d546864"],
                  "7z Header": ["377abcaf271c"],
                  "7z Footer": ["0000001706"],
+                 "DMG Header": ["7801730d626260"],
                  "Wikileaks": ["57696b696c65616b73"],
                  "Julian Assange": ["4a756c69616e20417373616e6765"],
                  "Mendax": ["4d656e646178"]}
