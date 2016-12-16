@@ -19,4 +19,7 @@ Code used is modified versions of `jean.py` to download data from blockchain.inf
 - Run the command: `python blockchain_downloader.py [TRANSACTION_ID] [OUTPUT_FILENAME]`
     - `TRANSACTION_ID` is optional (don't include the `[]` brackets).  It will ask for one upon start if one isn't supplied.
     - `OUTPUT_FILENAME` is optional (don't include the `[]` brackets).  The default output filename is 'file'.
-- If you have the bitcoin RPC service setup with a local blockchain, add it to the RPC settings at the top of the script.
+- If you have the bitcoin RPC service setup with a local blockchain, add it to the rpclogin.txt file.
+    -username in the first line and password in the second line.
+- RPC will not work correctly with out txindex=1 enabled in the bitcoin.conf file. 
+    -It will take some time to reindex everything but this will enable indexing for all transactions instead of just your own.
