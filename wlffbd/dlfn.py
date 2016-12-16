@@ -2,6 +2,7 @@
 '''dlfn class and methods'''
 from __future__ import print_function
 
+from .blockchaininfo import get_blockchain_request
 from .magic import check_magic
 
 from binascii import unhexlify, crc32
@@ -105,9 +106,6 @@ class dlfn():
         """
         if INDIVIDUALFILE:
             self.FILENAME = transaction
-        url = 'https://blockchain.info/tx/{}?show_adv=true'.format(transaction)
-        print('URL: {}'.format(url))
-        dataout = urllib2.urlopen(url)
         origdata = b''
         indata = b''
         inhex = ''
@@ -115,7 +113,7 @@ class dlfn():
         hexdata = ''
         atoutput = False
         inoutput = False
-        for line in dataout:
+        for line in get_blockchain_request('tx/{}'.format(transaction), show_adv='true'):
 
             if b'Output Scripts' in line:
                 atoutput = True
