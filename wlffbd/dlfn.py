@@ -75,8 +75,13 @@ class dlfn():
 
         revhex = "".join(reversed([hexdata[i:i+2] for i in range(0, len(hexdata), 2)]))  # reverses the hex
         origdata = data  # keeps the original data without modifying it
-        length = struct.unpack('<L', data[0:4])[0]
-        data = data[8:8+length]
+        try:
+            length = struct.unpack('<L', data[0:4])[0]
+            data = data[8:8+length]
+        except struct.error:
+            print("String incorrect length for upack:"+transaction)
+            self.save_file(transaction+newline(), "incorrectlength.txt")
+            pass
         # self.checksum(data)
         self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
         # self.save_file(inhex, self.FILENAME+"inhex.txt")     # saves the input hex
@@ -92,10 +97,10 @@ class dlfn():
         if check_magic(inhex) != '':
             print(transaction + check_magic(inhex)+" input")
             self.save_file(transaction + check_magic(inhex) + newline(), "inheaderfiles.txt")
-        if self.sha256_sum(data):
-            print("This output hash already exists in the list")
-        if self.sha256_sum(indata):
-            print("This intput hash already exists in the list")
+        # if self.sha256_sum(data):
+            # print("This output hash already exists in the list")
+        # if self.sha256_sum(indata):
+            # print("This intput hash already exists in the list")
 
         return data
 
