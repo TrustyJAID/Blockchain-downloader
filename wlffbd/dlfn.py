@@ -197,7 +197,9 @@ class dlfn():
         uploaded using the satoshi uploader
         does not work without the full file
         """
+        length = struct.unpack('<L', data[0:4])[0]
         checksum = struct.unpack('<L', data[4:8])[0]
+        data = data[8:8+length]
         if checksum != crc32(data):
             print('Checksum mismatch; expected %d but calculated %d' % (checksum, crc32(data)))
         return checksum
