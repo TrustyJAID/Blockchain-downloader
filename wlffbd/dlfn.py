@@ -35,7 +35,7 @@ class dlfn():
         # blockcount = self.SERVER.getblockcount()     # This will get the total current blocks
         for i in range(int(start), int(end)):
             start = timer()                     # Start a timer to see how long for each block
-            print ("Searching block: {0}: ".format(i), end='\r')
+            print ("Searching block: {0}:".format(i))
             blockhash = self.SERVER.getblockhash(i)  # Gets the block hash from the block index number
             for tx in self.SERVER.getblock(blockhash)['tx']:  # Gets all transactions from block hash
                 self.get_data_local(tx)                       # currently checks all transactions for data
@@ -74,6 +74,7 @@ class dlfn():
                     data += op.encode('utf8')
 
         revhex = "".join(reversed([hexdata[i:i+2] for i in range(0, len(hexdata), 2)]))  # reverses the hex
+        revinhex = "".join(reversed([inhex[i:i+2] for i in range(0, len(inhex), 2)]))  # reverses the hex
         origdata = data  # keeps the original data without modifying it
         try:
             length = struct.unpack('<L', data[0:4])[0]
@@ -83,20 +84,28 @@ class dlfn():
             self.save_file(transaction+newline(), "incorrectlength.txt")
             pass
         # self.checksum(data)
-        self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
+        # self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
         # self.save_file(inhex, self.FILENAME+"inhex.txt")     # saves the input hex
         # self.save_file(hexdata, self.FILENAME+"hex.txt")       # saves all hex data
-        self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
-        self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
+        # self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
+        # self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
+        headerinfo = ''
         if check_magic(hexdata) != '':
-            print(transaction + check_magic(hexdata)+" output")
-            self.save_file(transaction + check_magic(hexdata) + newline(), "headerfiles.txt")
+            headerinfo = check_magic(hexdata)
+            print(transaction + headerinfo + " output")
+            self.save_file(transaction + headerinfo + newline(), "headerfiles.txt")
         if check_magic(revhex) != '':
-            print(transaction + check_magic(revhex)+" reverse")
-            self.save_file(transaction + check_magic(inhex) + newline(), "revheaderfiles.txt")
+            headerinfo = check_magic(revhex)
+            print(transaction + headerinfo + " reverse output")
+            self.save_file(transaction + headerinfo + newline(), "revheaderfiles.txt")
         if check_magic(inhex) != '':
-            print(transaction + check_magic(inhex)+" input")
-            self.save_file(transaction + check_magic(inhex) + newline(), "inheaderfiles.txt")
+            headerinfo = check_magic(inhex)
+            print(transaction + headerinfo + " input")
+            self.save_file(transaction + headerinfo + newline(), "inheaderfiles.txt")
+        if check_magic(revinhex) != '':
+            headerinfo = check_magic(revinhex)
+            print(transaction + headerinfo + " reverse input")
+            self.save_file(transaction + headerinfo + newline(), "revinheaderfiles.txt")
         # if self.sha256_sum(data):
             # print("This output hash already exists in the list")
         # if self.sha256_sum(indata):
