@@ -8,6 +8,7 @@ import pytest
 
 import urllib2
 
+
 def test_make_blockchain_url():
     assert 'https://blockchain.info/test?foo=bar&six=9' == blockchaininfo.make_blockchain_url('test', foo='bar', six=9)
 
@@ -24,13 +25,17 @@ def test_get_blockchain_request(mock_urlopen):
 def test_get_blockchain_rawaddr(mock_urlopen):
     json = Mock()
     json.read.side_effect = ['{}', '{"simple": "json"}', '{"key": "value"}', '{"key": "value"}']
-    # TODO: Make this work
-    #mock_urlopen.side_effect = [json, json, urllib2.URLError('Test Error', json]
-    mock_urlopen.side_effect = [json, json, json, json]
+    mock_urlopen.return_value = json
     assert {} == blockchaininfo.get_blockchain_rawaddr('1234567890abcdef')
     assert {'simple': 'json'} == blockchaininfo.get_blockchain_rawaddr('1234567890abcdef')
     assert {'key': 'value'} == blockchaininfo.get_blockchain_rawaddr('1234567890abcdef')
-    # TODO: Test the printed output for the error, or remove it from these functions to make them pure
+    assert {'key': 'value'} == blockchaininfo.get_blockchain_rawaddr('1234567890abcdef', silent=False)
+
+@patch('wlffbd.blockchaininfo.urllib2.urlopen')
+def test_get_blockchain_rawaddr_urlerror(mock_urlopen):
+    json = Mock()
+    json.read.side_effect = ['{"key": "value"}', '{"key": "value"}']
+    mock_urlopen.side_effect = [urllib2.URLError('Test Error'), json]
     assert {'key': 'value'} == blockchaininfo.get_blockchain_rawaddr('1234567890abcdef', silent=False)
 
 
