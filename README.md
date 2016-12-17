@@ -21,5 +21,10 @@ Code used is modified versions of `jean.py` to download data from blockchain.inf
     - `OUTPUT_FILENAME` is optional (don't include the `[]` brackets).  The default output filename is 'file'.
 - If you have the bitcoin RPC service setup with a local blockchain, add it to the rpclogin.txt file.
     -username in the first line and password in the second line.
-- RPC will not work correctly with out txindex=1 enabled in the bitcoin.conf file. 
-    -It will take some time to reindex everything but this will enable indexing for all transactions instead of just your own.
+- enable RPC by adding bitcoin.conf to the folder with the blocks folder Appdata on windows default
+    -https://github.com/bitcoin/bitcoin/blob/master/contrib/debian/examples/bitcoin.conf
+    -Add txindex=1 
+    -enable rpcport:8332 
+    -change rpcuser and rpcpass to match rpclogin.txt
+    -Add server=1
+    
