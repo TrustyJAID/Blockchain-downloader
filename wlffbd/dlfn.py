@@ -14,6 +14,7 @@ import urllib2
 import zlib
 import hashlib
 import jsonrpclib
+import csv
 
 
 def newline():
@@ -76,6 +77,8 @@ class dlfn():
         revhex = "".join(reversed([hexdata[i:i+2] for i in range(0, len(hexdata), 2)]))  # reverses the hex
         revinhex = "".join(reversed([inhex[i:i+2] for i in range(0, len(inhex), 2)]))  # reverses the hex
         origdata = data  # keeps the original data without modifying it
+        if self.checksum(data):
+            self.save_file(transaction + newline(), "satoshicheck.txt")
         try:
             length = struct.unpack('<L', data[0:4])[0]
             data = data[8:8+length]
@@ -83,7 +86,7 @@ class dlfn():
             print("String incorrect length for upack:"+transaction)
             self.save_file(transaction+newline(), "incorrectlength.txt")
             pass
-        # self.checksum(data)
+
         # self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
         # self.save_file(inhex, self.FILENAME+"inhex.txt")     # saves the input hex
         # self.save_file(hexdata, self.FILENAME+"hex.txt")       # saves all hex data
@@ -107,9 +110,9 @@ class dlfn():
             print(transaction + headerinfo + " reverse input")
             self.save_file(transaction + headerinfo + newline(), "revinheaderfiles.txt")
         # if self.sha256_sum(data):
-            # print("This output hash already exists in the list")
+        #    print("This output hash already exists in the list")
         # if self.sha256_sum(indata):
-            # print("This intput hash already exists in the list")
+        #    print("This intput hash already exists in the list")
 
         return data
 
@@ -156,6 +159,7 @@ class dlfn():
                             data += unhexlify(c)
 
         origdata += data
+        self.checksum(data)
         length = struct.unpack('<L', data[0:4])[0]
         data = data[8:8+length]
         if check_magic(hexdata) != '':
@@ -197,12 +201,16 @@ class dlfn():
         uploaded using the satoshi uploader
         does not work without the full file
         """
-        length = struct.unpack('<L', data[0:4])[0]
-        checksum = struct.unpack('<L', data[4:8])[0]
-        data = data[8:8+length]
-        if checksum != crc32(data):
-            print('Checksum mismatch; expected %d but calculated %d' % (checksum, crc32(data)))
-        return checksum
+        try:
+            length = struct.unpack('<L', data[0:4])[0]
+            checksum = struct.unpack('<L', data[4:8])[0]
+            data = data[8:8+length]
+            if checksum != crc32(data):
+                return False
+            else:
+                return True
+        except struct.error:
+            return False
 
     def crc(self, data):
         """
@@ -220,8 +228,8 @@ class dlfn():
         Builds and checks a list of hashes from data
         downloaded from the blockchain
         useful to find duplicate data
-        although the more I think about ite
-        the less likely I think it's possible
+        figure out how to save as dictionary file
+
         """
         hashsum = hashlib.sha256(data)
         hashexists = False
