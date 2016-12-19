@@ -3,6 +3,7 @@
 from __future__ import print_function
 
 from .blockchaininfo import get_blockchain_request
+from .filesystem import read, readlines, write
 from .magic import check_magic
 
 from binascii import unhexlify, crc32
@@ -18,12 +19,12 @@ import csv
 
 
 def newline():
-        return '\r\n' if platform.system() == "Windows" else '\n'
+    return '\r\n' if platform.system() == "Windows" else '\n'
 
 
 class dlfn():
     FILENAME = ''
-    RPCUSER, RPCPASS = open('rpclogin.txt', 'rb').read().split()
+    RPCUSER, RPCPASS = read('rpclogin.txt', 'rb').split()
     SERVER = jsonrpclib.Server("http://{0}:{1}@localhost:8332".format(RPCUSER, RPCPASS))   # RPC Login
 
     def __init__(self, SERVER, FILENAME='file'):
@@ -171,29 +172,25 @@ class dlfn():
         self.save_file(indata, self.FILENAME+"in.txt")
         self.save_file(transaction+check_magic(hexdata)+newline(), "headerfiles.txt")
 
+
     def get_tx_list(self, tx_list, LOCAL=False):
-        """
-        This function checks the blockchain
-        for all transactions in the FILENAME document
-        """
-        with open(tx_list) as f:
-            transaction = f.readlines()
-        for i in range(len(transaction)):
-            blockhash = transaction[i].rstrip('\r\n')
-            print((type(blockhash), blockhash))
-            if (blockhash != ''):
+        """This function checks the blockchain for all transactions in the FILENAME document """
+        for line in readlines(tx_list):
+            blockhash = line.rstrip('\r\n')
+            if blockhash:
                 if LOCAL:
                     self.get_data_local(blockhash)
                 else:
                     self.get_data_online(blockhash)
+
 
     def save_file(self, dataout, filename):
         """
         This saves the data to the chosen
         filename in binary by appending the file
         """
-        with open(filename, "ab") as output:
-            output.write(dataout)
+        write(filename, dataout, 'ab')
+
 
     def checksum(self, data):
         """
@@ -201,6 +198,7 @@ class dlfn():
         uploaded using the satoshi uploader
         does not work without the full file
         """
+
         try:
             length = struct.unpack('<L', data[0:4])[0]
             checksum = struct.unpack('<L', data[4:8])[0]
@@ -212,13 +210,13 @@ class dlfn():
         except struct.error:
             return False
 
-    def crc(self, data):
+    def crc(self, filename):
         """
-        Should be used to determine if data
+        Should be used to determine if filename
         is garbage or is part of the file
         """
         prev = 0
-        for eachLine in open(data, "rb"):
+        for eachLine in open(filename, "rb"):
             prev = zlib.crc32(eachLine, prev)
             print (prev)
         return "%X" % (prev & 0xFFFFFFFF)
