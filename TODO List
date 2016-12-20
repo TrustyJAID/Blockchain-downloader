@@ -17,4 +17,5 @@ Python Specific TODO List
 1. Fix memory leak inside block range searcher. I can leave it on for a few hours and it racks up a huge amount of memory.
 2. Investigate direct block parsing, may have to move to python 3 for areliable parser. Not necessary unless speed and information
 access becomes an issue. RPC is doing OK so far But requires aditional setup that the other programs don't.
-3. Continue refactoring :)
+3. Impliment transaction crawler, might not be as easy until direct parsing is viable.
+4. Continue refactoring :)
