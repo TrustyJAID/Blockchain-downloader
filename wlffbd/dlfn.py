@@ -78,6 +78,7 @@ class dlfn():
         revhex = "".join(reversed([hexdata[i:i+2] for i in range(0, len(hexdata), 2)]))  # reverses the hex
         revinhex = "".join(reversed([inhex[i:i+2] for i in range(0, len(inhex), 2)]))  # reverses the hex
         origdata = data  # keeps the original data without modifying it
+        inorigdata = indata  # keeps the original data without modifying it
         if self.checksum(data):
             self.save_file(transaction + newline(), "satoshicheck.txt")
         try:
@@ -91,8 +92,8 @@ class dlfn():
         # self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
         # self.save_file(inhex, self.FILENAME+"inhex.txt")     # saves the input hex
         # self.save_file(hexdata, self.FILENAME+"hex.txt")       # saves all hex data
-        # self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
-        # self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
+        self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
+        self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
         headerinfo = ''
         if check_magic(hexdata) != '':
             headerinfo = check_magic(hexdata)

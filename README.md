@@ -27,4 +27,16 @@ Code used is modified versions of `jean.py` to download data from blockchain.inf
     -enable rpcport:8332 
     -change rpcuser and rpcpass to match rpclogin.txt
     -Add server=1
+
+## How-to
+- Run this tool inside Terminal, navigate to the download folder (cd)
+- Run with "python blockchain-downloader.py <txid> <filename>" is the traditional usage
+- or Run with "python blockchain-downloader.py <startblock> <endblock>" for block ranges (note: that is index height)
+- inside dlfn.py under get_data_local() are self.save_file() functions used to save various versions of information:
+    - You may have to remove the "# " before these functions to download the data
+    - indata is the input script data
+    - inhex is the input data as hex
+    - hexdata is the output data as hex
+    - data is the output data following the satoshi length + checksum
+    - origdata is the original unmodified output data
     
