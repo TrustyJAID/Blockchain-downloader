@@ -90,16 +90,16 @@ class dlfn():
             self.save_file(transaction+newline(), "incorrectlength.txt")
             pass
 
-        # self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
+        self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
         # self.save_file(inhex, self.FILENAME+"inhex.txt")     # saves the input hex
         # self.save_file(hexdata, self.FILENAME+"hex.txt")       # saves all hex data
         # self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
-        # self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
+        self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
         allhex = hexdata + inhex
         inhexmagic = check_magic(inhex)
         hexmagic = check_magic(inhex)
-        revhexmagic = check_magic(inhex)
-        revinhexmagic = check_magic(inhex)
+        revhexmagic = check_magic(revhex)
+        revinhexmagic = check_magic(revinhex)
         md5hashsearch = check_hash(allhex, "md5")
         sha1hashsearch = check_hash(allhex, "sha1")
         sha256hashsearch = check_hash(allhex, "sha256")
