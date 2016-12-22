@@ -48,4 +48,3 @@ def check_magic(hexcode, magic=DEFAULT_MAGIC):
     return ' '.join('{} Found'.format(key)
                    for key, values in magic.iteritems()
                    if all(v.lower() in hexcode for v in values))
-

@@ -5,6 +5,7 @@ from __future__ import print_function
 from .blockchaininfo import get_blockchain_request
 from .filesystem import read, readlines, write
 from .magic import check_magic
+from .hashsearch import check_hash
 
 from binascii import unhexlify, crc32
 from timeit import default_timer as timer
@@ -58,7 +59,7 @@ class dlfn():
         inhex = ''
         indata = b''
         data = b''
-        origdata = ''
+        origdata = b''
         for txin in tx['vin']:
             try:
                 for inop in txin['scriptSig']['hex'].split():  # Gathers the input script
@@ -78,9 +79,9 @@ class dlfn():
         revhex = "".join(reversed([hexdata[i:i+2] for i in range(0, len(hexdata), 2)]))  # reverses the hex
         revinhex = "".join(reversed([inhex[i:i+2] for i in range(0, len(inhex), 2)]))  # reverses the hex
         origdata = data  # keeps the original data without modifying it
-        inorigdata = indata  # keeps the original data without modifying it
         if self.checksum(data):
             self.save_file(transaction + newline(), "satoshicheck.txt")
+            print("Follows the Satoshi Download Method")
         try:
             length = struct.unpack('<L', data[0:4])[0]
             data = data[8:8+length]
@@ -92,25 +93,34 @@ class dlfn():
         # self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
         # self.save_file(inhex, self.FILENAME+"inhex.txt")     # saves the input hex
         # self.save_file(hexdata, self.FILENAME+"hex.txt")       # saves all hex data
-        self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
-        self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
-        headerinfo = ''
-        if check_magic(hexdata) != '':
-            headerinfo = check_magic(hexdata)
-            print(transaction + headerinfo + " output")
-            self.save_file(transaction + headerinfo + newline(), "headerfiles.txt")
-        if check_magic(revhex) != '':
-            headerinfo = check_magic(revhex)
-            print(transaction + headerinfo + " reverse output")
-            self.save_file(transaction + headerinfo + newline(), "revheaderfiles.txt")
-        if check_magic(inhex) != '':
-            headerinfo = check_magic(inhex)
-            print(transaction + headerinfo + " input")
-            self.save_file(transaction + headerinfo + newline(), "inheaderfiles.txt")
-        if check_magic(revinhex) != '':
-            headerinfo = check_magic(revinhex)
-            print(transaction + headerinfo + " reverse input")
-            self.save_file(transaction + headerinfo + newline(), "revinheaderfiles.txt")
+        # self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
+        # self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
+        allhex = hexdata + inhex
+        inhexmagic = check_magic(inhex)
+        hexmagic = check_magic(inhex)
+        revhexmagic = check_magic(inhex)
+        revinhexmagic = check_magic(inhex)
+        md5hashsearch = check_hash(allhex, "md5")
+        sha1hashsearch = check_hash(allhex, "sha1")
+        sha256hashsearch = check_hash(allhex, "sha256")
+        if hexmagic != '':
+            print(transaction + hexmagic + " output")
+            self.save_file(transaction + hexmagic + newline(), "headerfiles.txt")
+        if revhexmagic != '':
+            print(transaction + revhexmagic + " reverse output")
+            self.save_file(transaction + revhexmagic + newline(), "revheaderfiles.txt")
+        if inhexmagic != '':
+            print(transaction + inhexmagic + " input")
+            self.save_file(transaction + inhexmagic + newline(), "inheaderfiles.txt")
+        if revinhexmagic != '':
+            print(transaction + revinhexmagic + " reverse input")
+            self.save_file(transaction + revinhexmagic + newline(), "revinheaderfiles.txt")
+        if md5hashsearch != '':
+            print(transaction + md5hashsearch + "md5")
+        if sha1hashsearch != '':
+            print(transaction + sha1hashsearch + "sha1")
+        if sha256hashsearch != '':
+            print(transaction + sha256hashsearch + "sha256")
         # if self.sha256_sum(data):
         #    print("This output hash already exists in the list")
         # if self.sha256_sum(indata):
@@ -142,6 +152,7 @@ class dlfn():
 
             if b'</table>' in line:
                 atoutput = False
+                inouptut = False
 
             if inoutput:
                 if len(line) > 100:
@@ -173,7 +184,6 @@ class dlfn():
         self.save_file(indata, self.FILENAME+"in.txt")
         self.save_file(transaction+check_magic(hexdata)+newline(), "headerfiles.txt")
 
-
     def get_tx_list(self, tx_list, LOCAL=False):
         """This function checks the blockchain for all transactions in the FILENAME document """
         for line in readlines(tx_list):
@@ -184,14 +194,12 @@ class dlfn():
                 else:
                     self.get_data_online(blockhash)
 
-
     def save_file(self, dataout, filename):
         """
         This saves the data to the chosen
         filename in binary by appending the file
         """
         write(filename, dataout, 'ab')
-
 
     def checksum(self, data):
         """
