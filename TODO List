@@ -1,0 +1,21 @@
+TODO List for all coding effort.
+
+1. Fix SHA256_sum to recieve data, hash the data, and save to a csv file with a count associated. Read the csv file to a dictionary
+and search the dictionary for a key(the hash) and adjust the value if it is already there. If not then add the new key. Should
+work for both input and output seperately as files.
+2. Impliment Wikileaks hash search. Simple enough I have a list of hashed files and their filenames we need to read from the file
+into a dict and perform the same thing as the check_magic with the hashes and return the file name. Hashes should occur inside the data
+for the transaction.
+3. List fees with transaction. So my understanding of this is to take a transaction and list all associated 'values' that will give us
+the total of the transaction. The next step would be determining the total sent in that transaction which I haven't quite figured out how to do yet.
+4. We may look into what types of possible keys there could be for the files. It was brought to my attention that there could be a 
+k file that is an openssl private key that only contains binary data. We could search a limited range of transactions in a time frame
+for either duplicates or significant small transactions (e.g. 101, 1984, etc.) This feels essentially like building a brute forcer although 
+who knows it may work to find the key we're looking for. 
+
+Python Specific TODO List
+1. Fix memory leak inside block range searcher. I can leave it on for a few hours and it racks up a huge amount of memory.
+2. Investigate direct block parsing, may have to move to python 3 for areliable parser. Not necessary unless speed and information
+access becomes an issue. RPC is doing OK so far But requires aditional setup that the other programs don't.
+3. Impliment transaction crawler, might not be as easy until direct parsing is viable.
+4. Continue refactoring :)

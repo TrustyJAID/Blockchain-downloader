@@ -1,0 +1,6 @@
+jsonrpclib
+mock
+pytest
+pytest-cov
+pytest-flakes
+ipython

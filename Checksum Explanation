@@ -14,3 +14,29 @@ Note that the following may occur toward the end of the file:
 --OR--
 
 [XX][YY]01234567890123456789012[ZZ]E
+
+data = struct.pack('<L', len(data)) + struct.pack('<L', crc32(data)) + data
+
+
+crc should do be done separately
+becasue some files will only show up with the header
+and not have crc
+i dont want to waste your time too much
+but ill explain this a bit
+if a file is in multiple tx
+it will seem that crc fails
+because it does not find the expected end of the file
+but it knows what is supposed to come next
+so
+if you do crc on, detect a file and see that all the bits are checking out
+you then know where the rest of it is
+you can then use this not avoiding crawling directly
+and find the next transaction
+we will help you do this later on
+for now
+you can add an additional detect function
+that does crc as it gets the decoded data
+when it is valid for a few bits, you know it's real data
+copy paste this part of the log
+and then look at it later
+or delegate it
