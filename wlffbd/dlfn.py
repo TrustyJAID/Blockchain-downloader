@@ -12,11 +12,10 @@ from timeit import default_timer as timer
 
 import platform
 import struct
-import urllib2
 import zlib
 import hashlib
 import jsonrpclib
-import csv
+import gc
 
 
 def newline():
@@ -45,6 +44,7 @@ class dlfn():
 
             endtimer = timer() - start
             print(endtimer)
+            gc.collect()
 
     def get_data_local(self, transaction, INDIVIDUALFILE=False):
         """
