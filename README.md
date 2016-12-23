@@ -16,7 +16,7 @@ Code used is modified versions of `jean.py` to download data from blockchain.inf
 - Change directory to where the file is saved (`cd /path/to/folder`)
 - Install the requirements with `pip`
     - `pip install -r requirements.txt`
-- Run the command: `python blockchain-downloader.py [TRANSACTION_ID] [OUTPUT_FILENAME]`
+- Run the command: `python blockchain_downloader.py [TRANSACTION_ID] [OUTPUT_FILENAME]`
     - `TRANSACTION_ID` is optional (don't include the `[]` brackets).  It will ask for one upon start if one isn't supplied.
     - `OUTPUT_FILENAME` is optional (don't include the `[]` brackets).  The default output filename is 'file'.
 - If you have the bitcoin RPC service setup with a local blockchain, add it to the rpclogin.txt file.
@@ -30,7 +30,7 @@ Code used is modified versions of `jean.py` to download data from blockchain.inf
 
 ## How-to
 - Run this tool inside Terminal, navigate to the download folder (cd)
-- Run with "python blockchain-downloader.py <txid> <filename>" is the traditional usage
+- Run with "python blockchain_downloader.py <txid> <filename>" is the traditional usage
 - or Run with "python blockchain-downloader.py <startblock> <endblock>" for block ranges (note: that is index height)
 - inside dlfn.py under get_data_local() are self.save_file() functions used to save various versions of information:
     - You may have to remove the "# " before these functions to download the data
