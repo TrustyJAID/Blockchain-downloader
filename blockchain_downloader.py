@@ -58,7 +58,7 @@ class __main__():
     elif len(sys.argv) == 1:
         # This works if no arguments are given to allow the program to function
         BLOCKCHAINADDRESS = raw_input('Enter the blockchain Address or transactions file:')
-        FILENAME = raw_input('Enter the file name you would like to save to')
+        FILENAME = raw_input('Enter the file name you would like to save to:')
         if FILENAME == '':
             # This gives a default filename
             FILENAME = 'file.txt'
@@ -67,11 +67,8 @@ class __main__():
         # This checks if you're giving a list of transactions or just one
         dlfn.get_tx_list(BLOCKCHAINADDRESS, LOCAL)
 
-    elif sys.argv[1].isdigit() and LOCAL:
-        if len(sys.argv) == 3:
-            dlfn.get_block_data(sys.argv[1], sys.argv[2])
-        else:
-            dlfn.get_block_data(sys.argv[1], SERVER.getblockheight())
+    elif BLOCKCHAINADDRESS.isdigit() and FILENAME.isdigit() and LOCAL:
+            dlfn.get_block_data(BLOCKCHAINADDRESS, FILENAME)
 
     elif len(BLOCKCHAINADDRESS) < 64 and BLOCKCHAINADDRESS.startswith('1'):
         # Checks if wallet on main blockchain
