@@ -30,7 +30,7 @@ Code used is modified versions of `jean.py` to download data from blockchain.inf
 
 ## How-to
 - Run this tool inside Terminal, navigate to the download folder (cd)
-- Run with "python blockchain-downloader.py <txid> <filename>" is the traditional usage
+- Run with "python blockchain_downloader.py <txid> <filename>" is the traditional usage
 - or Run with "python blockchain-downloader.py <startblock> <endblock>" for block ranges (note: that is index height)
 - inside dlfn.py under get_data_local() are self.save_file() functions used to save various versions of information:
     - You may have to remove the "# " before these functions to download the data
