@@ -1,0 +1,17 @@
+Wikileaks contact info? [quote author=RHorning link=topic=1735.msg26876#msg26876 date=1291501064]
+
+Basically, bring it on. Let's encourage Wikileaks to use Bitcoins and I'm willing to face any risk or fallout from that act.
+
+No, don't "bringit on".
+
+The project needs to grow gradually so the software can be strengthened along the way.
+
+I make this appeal to WikiLeaks not to try to use Bitcoin. Bitcoin is a small beta community in its infancy. You would not stand to get more than pocket change, and the heat you would bring would likely destroy us at this stage.
+
+We have the hashes for genesis block through block 74000 hardcoded (compiled) into bitcoin, so there's no reason why we shouldn't be able to automatically download a compressed zipfile of the block database from [i]anywhere[/i],unpack it, verify it, and start running.
+
+The 74000 checkpoint is not enough to protect you, and does nothing if the download is already past 74000. -checkblocks does more, but is still easily defeated. You still must trust the supplier of the zipfile.
+
+uncompressed data using a protocol (bitcoin P2P) that wasn't designed for bulk data transfer.
+
+The data is mostly hashes and keys and signatures that are uncompressible.
