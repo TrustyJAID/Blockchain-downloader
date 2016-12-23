@@ -75,30 +75,17 @@ class dlfn():
                         data += unhexlify(op.encode('utf8'))
                 except:
                     data += op.encode('utf8')
-
+    
+        self.search_data(data, indata, hexdata, inhex, transaction)
+        self.save_output(data, indata, hexdata, inhex, transaction)
+    
+    def search_data(self, data, indata, hexdata, inhex, transaction):
         revhex = "".join(reversed([hexdata[i:i+2] for i in range(0, len(hexdata), 2)]))  # reverses the hex
         revinhex = "".join(reversed([inhex[i:i+2] for i in range(0, len(inhex), 2)]))  # reverses the hex
-        origdata = data  # keeps the original data without modifying it
-        if self.checksum(data):
-            self.save_file(transaction + newline(), "satoshicheck.txt")
-            print("Follows the Satoshi Download Method")
-        try:
-            length = struct.unpack('<L', data[0:4])[0]
-            data = data[8:8+length]
-        except struct.error:
-            print("String incorrect length for upack:"+transaction)
-            self.save_file(transaction+newline(), "incorrectlength.txt")
-            pass
-
-        self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
-        # self.save_file(inhex, self.FILENAME+"inhex.txt")     # saves the input hex
-        # self.save_file(hexdata, self.FILENAME+"hex.txt")       # saves all hex data
-        # self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
-        self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
         allhex = hexdata + inhex
-        alldata = indata + origdata
+        alldata = indata + data
         inhexmagic = check_magic(inhex)
-        hexmagic = check_magic(inhex)
+        hexmagic = check_magic(hexdata)
         revhexmagic = check_magic(revhex)
         revinhexmagic = check_magic(revinhex)
         md5hashsearch = check_hash(allhex, "md5")           # Searches in hex data
@@ -107,6 +94,9 @@ class dlfn():
         # md5hashsearchb = check_hash(alldata, "md5")         # Searches in binary data
         # sha1hashsearchb = check_hash(alldata, "sha1")       # for hashes
         # sha256hashsearchb = check_hash(alldata, "sha256")
+        if self.checksum(data):
+            self.save_file(transaction + newline(), "satoshicheck.txt")
+            print("Follows the Satoshi Download Method")
         if hexmagic != '':
             print(transaction + hexmagic + " output")
             self.save_file(transaction + hexmagic + newline(), "headerfiles.txt")
@@ -136,7 +126,20 @@ class dlfn():
         # if self.sha256_sum(indata):
         #    print("This intput hash already exists in the list")
 
-        return data
+    def save_output(self, data, indata, hexdata, inhex, transaction):
+        origdata = data
+        try:
+            length = struct.unpack('<L', data[0:4])[0]
+            data = data[8:8+length]
+        except struct.error:
+            print("String incorrect length for upack:"+transaction)
+            # self.save_file(transaction+newline(), "incorrectlength.txt")
+            pass
+        self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
+        # self.save_file(inhex, self.FILENAME+"inhex.txt")     # saves the input hex
+        # self.save_file(hexdata, self.FILENAME+"hex.txt")       # saves all hex data
+        # self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
+        self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
 
     def get_data_online(self, transaction, INDIVIDUALFILE=False):
         """
@@ -181,21 +184,9 @@ class dlfn():
                             hexdata += c
                             data += unhexlify(c)
 
-        origdata += data
-        try:
-            self.checksum(data)
-            length = struct.unpack('<L', data[0:4])[0]
-            data = data[8:8+length]
-        except struct.error:
-            pass
-        if check_magic(hexdata) != '':
-            print(check_magic(inhex)+" input")
-            print(check_magic(hexdata)+" output")
-
-        self.save_file(origdata, self.FILENAME+"orig.txt")
-        self.save_file(data, self.FILENAME+".txt")
-        self.save_file(indata, self.FILENAME+"in.txt")
-        self.save_file(transaction+check_magic(hexdata)+newline(), "headerfiles.txt")
+        
+        self.search_data(data, indata, hexdata, inhex, transaction)
+        self.save_output(data, indata, hexdata, inhex, transaction)
 
     def get_tx_list(self, tx_list, LOCAL=False):
         """This function checks the blockchain for all transactions in the FILENAME document """

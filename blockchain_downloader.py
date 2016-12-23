@@ -67,8 +67,11 @@ class __main__():
         # This checks if you're giving a list of transactions or just one
         dlfn.get_tx_list(BLOCKCHAINADDRESS, LOCAL)
 
-    elif BLOCKCHAINADDRESS.isdigit() and FILENAME.isdigit() and LOCAL:
-            dlfn.get_block_data(BLOCKCHAINADDRESS, FILENAME)
+    elif BLOCKCHAINADDRESS.isdigit() and LOCAL:
+            if FILENAME.isdigit():
+                dlfn.get_block_data(BLOCKCHAINADDRESS, FILENAME)
+            else:
+                dlfn.get_block_data(BLOCKCHAINADDRESS, SERVER.getblockcount())
 
     elif len(BLOCKCHAINADDRESS) < 64 and BLOCKCHAINADDRESS.startswith('1'):
         # Checks if wallet on main blockchain
