@@ -182,9 +182,12 @@ class dlfn():
                             data += unhexlify(c)
 
         origdata += data
-        self.checksum(data)
-        length = struct.unpack('<L', data[0:4])[0]
-        data = data[8:8+length]
+        try:
+            self.checksum(data)
+            length = struct.unpack('<L', data[0:4])[0]
+            data = data[8:8+length]
+        except struct.error:
+            pass
         if check_magic(hexdata) != '':
             print(check_magic(inhex)+" input")
             print(check_magic(hexdata)+" output")
