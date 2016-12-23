@@ -104,9 +104,9 @@ class dlfn():
         md5hashsearch = check_hash(allhex, "md5")           # Searches in hex data
         sha1hashsearch = check_hash(allhex, "sha1")         # for hashes
         sha256hashsearch = check_hash(allhex, "sha256")
-        md5hashsearchb = check_hash(alldata, "md5")         # Searches in binary data
-        sha1hashsearchb = check_hash(alldata, "sha1")       # for hashes
-        sha256hashsearchb = check_hash(alldata, "sha256")
+        # md5hashsearchb = check_hash(alldata, "md5")         # Searches in binary data
+        # sha1hashsearchb = check_hash(alldata, "sha1")       # for hashes
+        # sha256hashsearchb = check_hash(alldata, "sha256")
         if hexmagic != '':
             print(transaction + hexmagic + " output")
             self.save_file(transaction + hexmagic + newline(), "headerfiles.txt")
