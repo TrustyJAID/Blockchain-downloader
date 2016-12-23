@@ -125,12 +125,12 @@ class dlfn():
             print(transaction + sha1hashsearch + "sha1 hex")
         if sha256hashsearch != '':
             print(transaction + sha256hashsearch + "sha256 hex")
-        if md5hashsearchb != '':
-            print(transaction + md5hashsearchb + "md5")
-        if sha1hashsearchb != '':
-            print(transaction + sha1hashsearchb + "sha1")
-        if sha256hashsearchb != '':
-            print(transaction + sha256hashsearchb + "sha256")
+        # if md5hashsearchb != '':
+        #     print(transaction + md5hashsearchb + "md5")
+        # if sha1hashsearchb != '':
+        #     print(transaction + sha1hashsearchb + "sha1")
+        # if sha256hashsearchb != '':
+        #     print(transaction + sha256hashsearchb + "sha256")
         # if self.sha256_sum(data):
         #    print("This output hash already exists in the list")
         # if self.sha256_sum(indata):
