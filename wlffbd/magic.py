@@ -37,7 +37,13 @@ DEFAULT_MAGIC = {"DOC Header": ["d0cf11e0a1b11ae1"],
                  "DMG Header": ["7801730d626260"],
                  "Wikileaks": ["57696b696c65616b73"],
                  "Julian Assange": ["4a756c69616e20417373616e6765"],
-                 "Mendax": ["4d656e646178"]}
+                 "Mendax": ["4d656e646178"],
+                 "eta numeris": ["392d8a3eea2527d6ad8b1ebbab6ad"],
+                 "sin topper": ["d6c4c5cc97f9cb8849d9914e516f9"],
+                 "project runway": ["847d8d6ea4edd8583d4a7dc3deeae"],
+                 "7FG final request": ["831cf9c1c534ecdae63e2c8783eb9"],
+                 "fall of cassandra": ["2b6dae482aede5bac99b7d47abdb3"]}
+
 
 
 def check_magic(hexcode, magic=DEFAULT_MAGIC):

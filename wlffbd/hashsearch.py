@@ -17,12 +17,12 @@ def check_hash(hexcode, sumcheck, MD5=MD5, SHA1=SHA1, SHA256=SHA256):
     if sumcheck == "md5":
         return ' '.join('{}'.format(key)
                         for key, values in MD5.iteritems()
-                        if all(v.lower() in hexcode for v in values))
+                        if all(v in hexcode for v in values))
     if sumcheck == "sha1":
         return ' '.join('{}'.format(key)
                         for key, values in SHA1.iteritems()
-                        if all(v.lower() in hexcode for v in values))
+                        if all(v in hexcode for v in values))
     if sumcheck == "sha256":
         return ' '.join('{}'.format(key)
                         for key, values in SHA256.iteritems()
-                        if all(v.lower() in hexcode for v in values))
+                        if all(v in hexcode for v in values))
