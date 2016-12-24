@@ -1,4 +1,6 @@
 jsonrpclib
+click
+colorama
 mock
 pytest
 pytest-cov

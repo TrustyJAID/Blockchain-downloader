@@ -1,1 +1,3 @@
 jsonrpclib
+click
+colorama
