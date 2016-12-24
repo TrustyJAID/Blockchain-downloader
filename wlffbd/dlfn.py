@@ -55,11 +55,9 @@ class dlfn():
         rawTx = self.SERVER.getrawtransaction(transaction)   # gets the raw transaction from RPC
         tx = self.SERVER.decoderawtransaction(rawTx)         # Decodes the raw transaction from RPC
         hexdata = ''
-        revhex = ''
         inhex = ''
         indata = b''
         data = b''
-        origdata = b''
         for txin in tx['vin']:
             try:
                 for inop in txin['scriptSig']['hex'].split():  # Gathers the input script
@@ -88,12 +86,9 @@ class dlfn():
         hexmagic = check_magic(hexdata)
         revhexmagic = check_magic(revhex)
         revinhexmagic = check_magic(revinhex)
-        md5hashsearch = check_hash(allhex, "md5")           # Searches in hex data
-        sha1hashsearch = check_hash(allhex, "sha1")         # for hashes
-        sha256hashsearch = check_hash(allhex, "sha256")
-        # md5hashsearchb = check_hash(alldata, "md5")         # Searches in binary data
-        # sha1hashsearchb = check_hash(alldata, "sha1")       # for hashes
-        # sha256hashsearchb = check_hash(alldata, "sha256")
+        md5hashsearch = check_hash(allhex, 'md5')           # Searches in hex data
+        sha1hashsearch = check_hash(allhex, 'sha1')         # for hashes
+        sha256hashsearch = check_hash(allhex, 'sha256')
         if self.checksum(data):
             self.save_file(transaction + newline(), "satoshicheck.txt")
             print("Follows the Satoshi Download Method")
@@ -115,13 +110,6 @@ class dlfn():
             print(transaction + sha1hashsearch + "sha1 hex")
         if sha256hashsearch != '':
             print(transaction + sha256hashsearch + "sha256 hex")
-        # if md5hashsearchb != '':
-        #     print(transaction + md5hashsearchb + "md5")
-        # if sha1hashsearchb != '':
-        #     print(transaction + sha1hashsearchb + "sha1")
-        # if sha256hashsearchb != '':
-        #     print(transaction + sha256hashsearchb + "sha256")
-        # if self.sha256_sum(data):
         #    print("This output hash already exists in the list")
         # if self.sha256_sum(indata):
         #    print("This intput hash already exists in the list")

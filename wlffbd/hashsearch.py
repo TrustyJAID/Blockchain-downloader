@@ -1,28 +1,16 @@
 # -*- coding: utf-8 -*-
 '''Wikileaks hash search functions'''
 import json
+from .filesystem import read
+from binascii import hexlify
 
-with open("wlhashes/md5.json", "r") as md5json:
-    MD5 = json.load(md5json)
-with open("wlhashes/sha1.json", "r") as sha1json:
-    SHA1 = json.load(sha1json)
-with open("wlhashes/sha256.json", "r") as sha256json:
-    SHA256 = json.load(sha256json)
+hashes = {hash: json.loads(read('data/wlhashes/{}.json'.format(hash)))
+          for hash in ('md5', 'sha1', 'sha256')}
 
-
-def check_hash(hexcode, sumcheck, MD5=MD5, SHA1=SHA1, SHA256=SHA256):
+def check_hash(hexcode, sumcheck):
     '''
     This will return whether or not a wikileaks file hash is inside the blockchain
     '''
-    if sumcheck == "md5":
-        return ' '.join('{}'.format(key)
-                        for key, values in MD5.iteritems()
-                        if all(v in hexcode for v in values))
-    if sumcheck == "sha1":
-        return ' '.join('{}'.format(key)
-                        for key, values in SHA1.iteritems()
-                        if all(v in hexcode for v in values))
-    if sumcheck == "sha256":
-        return ' '.join('{}'.format(key)
-                        for key, values in SHA256.iteritems()
-                        if all(v in hexcode for v in values))
+    return ' '.join('{}'.format(key)
+                    for key, values in hashes[sumcheck].iteritems()
+                    if all(hexlify(v.encode('utf8')) in hexcode for v in values))
