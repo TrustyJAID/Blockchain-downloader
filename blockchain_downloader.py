@@ -3,7 +3,7 @@ from __future__ import print_function
 
 from wlffbd.blockchaininfo import get_tx_from_online
 from wlffbd.dlfn import dlfn
-from wlffbd.magic import check_magic
+from wlffbd.search import check_magic
 
 import json
 import sys
