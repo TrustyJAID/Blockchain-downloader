@@ -2,10 +2,10 @@
 '''dlfn class and methods'''
 from __future__ import print_function
 
+from . import satoshi
 from .blockchaininfo import get_blockchain_request
 from .filesystem import read, readlines, write
-from .magic import check_magic
-from .hashsearch import check_hash
+from .search import check_magic, check_hash
 
 from binascii import unhexlify, crc32
 from timeit import default_timer as timer
@@ -199,17 +199,8 @@ class dlfn():
         uploaded using the satoshi uploader
         does not work without the full file
         """
-
-        try:
-            length = struct.unpack('<L', data[0:4])[0]
-            checksum = struct.unpack('<L', data[4:8])[0]
-            data = data[8:8+length]
-            if checksum != crc32(data):
-                return False
-            else:
-                return True
-        except struct.error:
-            return False
+        length, checksum, data = satoshi.length_checksum_data_from_rawdata(data)
+        return satoshi.verify_checksum_data(checksum, data)
 
     def crc(self, filename):
         """
