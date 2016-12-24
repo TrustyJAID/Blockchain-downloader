@@ -75,7 +75,7 @@ class dlfn():
                     data += op.encode('utf8')
     
         self.search_data(data, indata, hexdata, inhex, transaction)
-        self.save_output(data, indata, hexdata, inhex, transaction)
+        self.save_data(data, indata, hexdata, inhex, transaction)
     
     def search_data(self, data, indata, hexdata, inhex, transaction):
         revhex = "".join(reversed([hexdata[i:i+2] for i in range(0, len(hexdata), 2)]))  # reverses the hex
@@ -114,7 +114,7 @@ class dlfn():
         # if self.sha256_sum(indata):
         #    print("This intput hash already exists in the list")
 
-    def save_output(self, data, indata, hexdata, inhex, transaction):
+    def save_data(self, data, indata, hexdata, inhex, transaction):
         origdata = data
         try:
             length = struct.unpack('<L', data[0:4])[0]
@@ -123,11 +123,11 @@ class dlfn():
             print("String incorrect length for upack:"+transaction)
             # self.save_file(transaction+newline(), "incorrectlength.txt")
             pass
-        self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
+        # self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
         # self.save_file(inhex, self.FILENAME+"inhex.txt")     # saves the input hex
         # self.save_file(hexdata, self.FILENAME+"hex.txt")       # saves all hex data
         # self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
-        self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
+        # self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
 
     def get_data_online(self, transaction, INDIVIDUALFILE=False):
         """
@@ -174,7 +174,7 @@ class dlfn():
 
         
         self.search_data(data, indata, hexdata, inhex, transaction)
-        self.save_output(data, indata, hexdata, inhex, transaction)
+        self.save_data(data, indata, hexdata, inhex, transaction)
 
     def get_tx_list(self, tx_list, LOCAL=False):
         """This function checks the blockchain for all transactions in the FILENAME document """

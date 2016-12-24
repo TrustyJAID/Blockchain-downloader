@@ -13,4 +13,4 @@ def check_hash(hexcode, sumcheck):
     '''
     return ' '.join('{}'.format(key)
                     for key, values in hashes[sumcheck].iteritems()
-                    if all(hexlify(v.encode('utf8')) in hexcode for v in values))
+                    if hexlify(values.encode('utf8')) in hexcode)
