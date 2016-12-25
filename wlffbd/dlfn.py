@@ -123,11 +123,11 @@ class dlfn():
             print("String incorrect length for upack:"+transaction)
             # self.save_file(transaction+newline(), "incorrectlength.txt")
             pass
-        # self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
+        self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
         # self.save_file(inhex, self.FILENAME+"inhex.txt")     # saves the input hex
         # self.save_file(hexdata, self.FILENAME+"hex.txt")       # saves all hex data
-        # self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
-        # self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
+        self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
+        self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
 
     def get_data_online(self, transaction, INDIVIDUALFILE=False):
         """
