@@ -4,6 +4,7 @@ from __future__ import print_function
 
 from . import satoshi
 from .blockchaininfo import get_blockchain_request
+from .blockchainrpc import make_server
 from .filesystem import read, readlines, write
 from .search import check_magic, check_hash
 
@@ -14,7 +15,6 @@ import platform
 import struct
 import zlib
 import hashlib
-import jsonrpclib
 import gc
 
 
@@ -25,7 +25,7 @@ def newline():
 class dlfn():
     FILENAME = ''
     RPCUSER, RPCPASS = read('rpclogin.txt', 'rb').split()
-    SERVER = jsonrpclib.Server("http://{0}:{1}@localhost:8332".format(RPCUSER, RPCPASS))   # RPC Login
+    SERVER = make_server(username=RPCUSER, password=RPCPASS)
 
     def __init__(self, SERVER, FILENAME='file'):
         self.FILENAME = FILENAME
