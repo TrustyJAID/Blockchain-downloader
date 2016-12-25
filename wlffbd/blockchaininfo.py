@@ -19,17 +19,53 @@ def get_blockchain_request(path, uri=BLOCKCHAIN_URI, **kwargs):
     return urllib2.urlopen(make_blockchain_url(path, uri=uri, **kwargs))
 
 
+def get_blockchain_transaction(transaction, format, uri=BLOCKCHAIN_URI):
+    '''Return data for a transaction by tx_index or tx_hash in the given format.
+    format can be "html", "json", or "hex".'''
+    return get_blockchain_request('tx/{}'.format(transaction), format=format, uri=uri)
+
+
+def get_blockchain_transaction_json(transaction, uri=BLOCKCHAIN_URI):
+    '''Return JSON data for a transaction by tx_index or tx_hash.'''
+    return get_blockchain_transaction(transaction, format='json', uri=uri)
+
+
+def get_blockchain_transaction_hex(transaction, uri=BLOCKCHAIN_URI):
+    '''Return raw hex data for a transaction by tx_index or tx_hash.'''
+    return get_blockchain_transaction(transaction, format='hex', uri=uri)
+
+
+def get_blockchain_block_height_json(height, uri=BLOCKCHAIN_URI):
+    '''Return JSON data with array of blocks at specified height.'''
+    return get_blockchain_request('block-height/{}'.format(height), format='json', uri=uri)
+
+
+def get_blockchain_block_height(height, uri=BLOCKCHAIN_URI):
+    '''Return array of blocks at specified height or empty list.'''
+    return json.loads(get_blockchain_block_height_json(height)).get('blocks', [], uri=uri)
+
+
+def get_blockchain_rawblock_json(block, uri=BLOCKCHAIN_URI):
+    '''Return JSON data for a given block_index or block_hash'''
+    return get_blockchain_request('rawblock/{}'.format(block), format='json', uri=uri)
+
+
+def get_blockchain_rawaddr_json(address, limit=50, offset=0, uri=BLOCKCHAIN_URI):
+    '''Return JSON data for a given address, limit, and offset.'''
+    return get_blockchain_request('rawaddr/{}'.format(address), format='json', limit=limit, offset=offset, uri=uri)
+
+
 def get_blockchain_rawaddr(address, limit=50, offset=0, silent=True, uri=BLOCKCHAIN_URI):
     error = True
     while error:
         try:
-            dat = get_blockchain_request('rawaddr/{}'.format(address), format=json, limit=limit, offset=offset, uri=uri)
+            dat = get_blockchain_rawaddr_json(address, limit=limit, offset=offset, uri=uri)
             error = False
         except urllib2.URLError, e:
             if not silent:
                 print('Error: Trying to open address {} from blockchain.info: '.format(address, e.reason))
     return json.loads(dat.read().decode())
-
+                                                            
 
 def get_txs_from_blockchain_json(data):
     return [tx.get('hash').encode('ascii') for tx in data.get('txs', [])]

@@ -199,8 +199,7 @@ class dlfn():
         uploaded using the satoshi uploader
         does not work without the full file
         """
-        length, checksum, data = satoshi.length_checksum_data_from_rawdata(data)
-        return satoshi.verify_checksum_data(checksum, data)
+        return satoshi.verify_rawdata(data)
 
     def crc(self, filename):
         """
