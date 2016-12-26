@@ -70,27 +70,27 @@ def check_hash(hexcode, sumcheck):
                     if hexlify(values.encode('utf8')) in hexcode)
 
 
-def search_hex(hexdata, transaction, IO):
+def search_hex(hexdata, IO):
     revhex = "".join(reversed([hexdata[i:i+2] for i in range(0, len(hexdata), 2)]))  # reverses the hex
     hexmagic = check_magic(hexdata)
     revhexmagic = check_magic(revhex)
     if hexmagic != '':
-        return transaction + " " + hexmagic + IO
+        return hexmagic + " " + IO
     if revhexmagic != '':
-        return transaction + revhexmagic + " " + IO + "reverse"
+        return  revhexmagic + " " + IO + " reverse"
     else:
         return ''
 
 
-def search_hashes(allhex, transaction):
+def search_hashes(allhex):
     md5hashsearch = check_hash(allhex, 'md5')           # Searches in hex data
     sha1hashsearch = check_hash(allhex, 'sha1')         # for hashes
     sha256hashsearch = check_hash(allhex, 'sha256')
     if md5hashsearch != '':
-        return transaction + md5hashsearch + "md5"
+        return md5hashsearch + " md5"
     if sha1hashsearch != '':
-        return transaction + sha1hashsearch + "sha1"
+        return sha1hashsearch + " sha1"
     if sha256hashsearch != '':
-        return transaction + sha256hashsearch + "sha256"
+        return sha256hashsearch + " sha256"
     else:
         return ''

@@ -75,12 +75,12 @@ class dlfn():
                     data += op.encode('utf8')
         
         significanttx = ''
-        significanttx += search_hex(hexdata, transaction, "output")
-        significanttx += search_hex(inhex, transaction, "input")
-        significanttx += search_hashes(inhex+hexdata, transaction)
+        significanttx += search_hex(hexdata, "output")
+        significanttx += search_hex(inhex, "input")
+        significanttx += search_hashes(inhex+hexdata)
         if significanttx != '':
-            print(significanttx)
-            self.save_file(significanttx + newline(), "significant.txt")
+            print(transaction + " " + significanttx)
+            self.save_file(transaction + " " + significanttx + newline(), "significant.txt")
         self.save_data(data, indata, transaction)
     
 
