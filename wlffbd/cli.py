@@ -2,7 +2,7 @@
 '''cli functions and package entry point'''
 from __future__ import print_function
 
-from . import blockchain
+from . import blockchaininfo
 from . import satoshi
 
 import click
