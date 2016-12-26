@@ -23,10 +23,11 @@ Code used is modified versions of `jean.py` to download data from blockchain.inf
     -username in the first line and password in the second line.
 - enable RPC by adding bitcoin.conf to the folder with the blocks folder Appdata on windows default
     -https://github.com/bitcoin/bitcoin/blob/master/contrib/debian/examples/bitcoin.conf
-    -Add txindex=1 
-    -enable rpcport:8332 
-    -change rpcuser and rpcpass to match rpclogin.txt
-    -Add server=1
+    - Add txindex=1 
+    - enable rpcporr=8332 
+    - change rpcuser and rpcpass to match rpclogin.txt
+    - Add server=1
+
 
 ## How-to
 - Run this tool inside Terminal, navigate to the download folder (cd)
