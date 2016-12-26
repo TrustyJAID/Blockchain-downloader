@@ -82,7 +82,4 @@ class __main__():
 
     else:
         dlfn.FILENAME = FILENAME
-        if LOCAL:
-            dlfn.get_data_local(BLOCKCHAINADDRESS, INDIVIDUALFILE)
-        else:
-            dlfn.get_data_online(BLOCKCHAINADDRESS, INDIVIDUALFILE)
+        dlfn.save_data(BLOCKCHAINADDRESS, FILENAME, LOCAL)
