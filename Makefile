@@ -67,5 +67,5 @@ wheel:
 
 ## Some example invocations for integration testing
 integrate:
-	python blockchain_downloader.py `head -1 data/cablegate-addresses.txt`
-	python blockchain_downloader.py `head -1 data/wikileaks-addresses.txt`
+	python blockchain_downloader.py `head -1 data/transactions/cablegate-transactions.txt`
+	python blockchain_downloader.py `head -1 data/addresses/wikileaks-addresses.txt`

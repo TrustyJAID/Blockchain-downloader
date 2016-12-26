@@ -2,6 +2,7 @@
 '''cli functions and package entry point'''
 from __future__ import print_function
 
+from . import blockchaininfo
 from . import satoshi
 
 import click
@@ -17,19 +18,15 @@ def wlffbd():
 
 @wlffbd.group('satoshi')
 def cli_satoshi():
+    '''Satoshi downloader and uploader functionality'''
     pass
 
 
-@cli_satoshi.command('download')
+@cli_satoshi.command('download-tx')
 @click.argument('txid')
-def satoshi_download(txid):
-    '''Reimplementation of Satoshi-Downloader.py as subcommand of `wlffbd satoshi`'''
-    # TODO: Implement local / remote blockchain data retrieval
-    tx = {'vout': [{'scriptPubKey': {'asm': satoshi.hexlify(satoshi.make_rawdata('This is just a test! TODO: Make this real!'))}},
-                   {},
-                   {}]}
-    rawdata = satoshi.rawdata_from_jsonrpc_rawtx(tx)
-    length, checksum, data = satoshi.length_checksum_data_from_rawdata(rawdata)
+def satoshi_download_tx(txid):
+    '''Download data from a single txid using satoshi method'''
+    _, checksum, data = satoshi.length_checksum_data_from_rawdata(blockchain.rawdata_from_txid(txid))
     if satoshi.verify_checksum_data(checksum, data):
         sys.stdout.write(data)
     else:
@@ -38,7 +35,6 @@ def satoshi_download(txid):
                                                                                  click.style(str(satoshi.crc32(data) & 0xffffffff), fg='green')),
                    err=True)
         sys.exit(-1)
-                   
 
 
 @cli_satoshi.command('upload')
