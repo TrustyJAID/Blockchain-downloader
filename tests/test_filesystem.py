@@ -6,6 +6,7 @@ from mock import patch, mock_open
 from StringIO import StringIO
 
 import pytest
+import platform
 
 
 # TODO: Figure out why decorator version doesn't work for this
@@ -42,3 +43,6 @@ def test_write(mock_file):
 def test_write_fail(mock_stderr):
     assert None == filesystem.write('', '')
     assert len(mock_stderr.getvalue())
+
+def test_newline():
+    assert platform.system() == 'Windows' and '\r\n' or '\n' == filesystem.newline()

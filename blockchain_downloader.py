@@ -68,10 +68,7 @@ class __main__():
         dlfn.get_tx_list(BLOCKCHAINADDRESS, LOCAL)
 
     elif BLOCKCHAINADDRESS.isdigit() and LOCAL:
-            if FILENAME.isdigit():
-                dlfn.get_block_data(BLOCKCHAINADDRESS, FILENAME)
-            else:
-                dlfn.get_block_data(BLOCKCHAINADDRESS, SERVER.getblockcount())
+            dlfn.get_block_tx(BLOCKCHAINADDRESS, FILENAME, LOCAL)
 
     elif len(BLOCKCHAINADDRESS) < 64 and BLOCKCHAINADDRESS.startswith('1'):
         # Checks if wallet on main blockchain

@@ -4,7 +4,7 @@ from __future__ import print_function
 
 import os
 import sys
-
+import platform
 
 def read(filename, mode='r', buffering=-1, default=None, silent=True):
     '''Read a given filename opened with the given mode and buffering settings, returning that data or the default.
@@ -51,3 +51,6 @@ def write(filename, data, mode='w', buffering=-1, silent=True):
         data = None
         print('Error: {}'.format(str(e)), file=sys.stderr)
     return data
+
+def newline():
+    return '\r\n' if platform.system() == "Windows" else '\n'

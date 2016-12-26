@@ -94,3 +94,24 @@ def search_hashes(allhex):
         return sha256hashsearch + " sha256"
     else:
         return ''
+
+def sha256_sum(self, data):
+    """
+    Builds and checks a list of hashes from data
+    downloaded from the blockchain
+    useful to find duplicate data
+    TODO: figure out how to save as dictionary file and impliment into searching
+
+    """
+    hashsum = hashlib.sha256(data)
+    hashexists = False
+    with open("hashindex.txt", "a+") as hashfile:
+        for hashes in hashfile:
+            if hashsum.hexdigest() == hashes.strip():
+                hashexists = True
+
+        if not hashexists:
+            hashfile.writelines(hashsum.hexdigest()+newline())
+            hashexists = False
+    hashfile.close()
+    return hashexists

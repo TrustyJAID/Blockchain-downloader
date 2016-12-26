@@ -88,3 +88,40 @@ def get_tx_from_online(address, limit=50, sleep=1, callback=None):
             time.sleep(sleep)
 
     return txlist
+
+def get_data_online(transaction):
+    """
+    Downloads the data from blockchain.info
+    TODO: Change the data collection to json
+    """
+    inhex = ''
+    hexdata = ''
+    atoutput = False
+    inoutput = False
+    for line in get_blockchain_request('tx/{}'.format(transaction), show_adv='true'):
+
+        if b'Output Scripts' in line:
+            atoutput = True
+
+        if b'Input Scripts' in line:
+            inoutput = False
+
+        if b'</table>' in line:
+            atoutput = False
+            inouptut = False
+
+        if inoutput:
+            if len(line) > 100:
+                chunks = line.split(b' ')
+                for c in chunks:
+                    print(c)
+                    if b'O' not in c and b'\n' not in c and b'>' not in c and b'<' not in c:
+                        inhex += c
+
+        if atoutput:
+            if len(line) > 100:
+                chunks = line.split(b' ')
+                for c in chunks:
+                    if b'O' not in c and b'\n' not in c and b'>' not in c and b'<' not in c:
+                        hexdata += c
+    return hexdata, inhex
