@@ -52,3 +52,20 @@ def test_get_tx_from_online(mock_sleep, mock_urlopen):
     def _callback(txlist, n_tx):
         assert len(txlist) < n_tx
     blockchaininfo.get_tx_from_online('1234567890abcdef', limit=3, sleep=1, callback=_callback)
+
+
+def test_get_data_online():
+    Page = "Output Scripts somerandomhexvalues"
+    # Page.getrawtransaction.return_value = 'raw return value here'
+    # Page.decoderawtransaction.return_value = {"vout": [{"value": 1,"n": 0,"scriptPubKey": {"asm": "OP_DUP cad3e1794b73c2d940eefcc29cd55f44eab95d95 OP_CHECKSIG","hex": "abcdef","reqSigs": 1,"type": "pubkeyhash","addresses": ["1walletidthatisblank"]}}, ]}
+    hexdata = 'somerandomhexvalues'
+    assert hexdata == blockchaininfo.get_data_online('somerandomhexvalues', Page=Page)
+
+'''
+def test_get_indata_online():
+    SERVER = Mock()
+    SERVER.getrawtransaction.return_value = 'raw return value here'
+    SERVER.decoderawtransaction.return_value = {"vin": [ {"txid": "somerandomtx","vout": 1,"scriptSig": {"asm": "thiscanbeanything","hex": "somethingbelongsherethatiswaymorethan40characters"},"sequence": 1}]}    
+    hexdata = 'somethingbelongsherethatiswaymorethan40characters'
+    assert hexdata == blockchaininfo.get_indata_online('somethingbelongsherethatiswaymorethan40characters', SERVER=SERVER)
+    '''

@@ -8,7 +8,6 @@ DEFAULT_PORT = 8332
 DEFAULT_SCHEMA = 'http'
 
 
-
 def make_server_from_url(url):
     '''Return a `jsonrpclib.Server` instance initialized with the given url'''
     return jsonrpclib.Server(url)
@@ -29,8 +28,10 @@ def make_server(username, password, hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT
                                                 port=port,
                                                 schema=schema))
 
+
 def get_block_height(SERVER):
     return SERVER.getblockcount()
+
 
 def get_block_transactions(blockindex, SERVER):
     """
@@ -42,28 +43,23 @@ def get_block_transactions(blockindex, SERVER):
         txlist += [tx]
     return txlist
 
+
 def get_data_local(transaction, SERVER):
     """
     Downloads data from Bitcoin Core RPC and returns hex
     """
-    
     rawTx = SERVER.getrawtransaction(transaction)   # gets the raw transaction from RPC
     tx = SERVER.decoderawtransaction(rawTx)         # Decodes the raw transaction from RPC
-    hexdata = ''
-    for txout in tx['vout']:
-        for op in txout['scriptPubKey']['asm'].split(' '):  # searches for all OP data
-            if not op.startswith('OP_') and len(op) >= 40:
-                hexdata += op.encode('utf8')
-    return hexdata
+    return ''.join(op
+                   for txout in tx.get('vout')
+                   for op in txout.get('scriptPubKey', {'asm': ''}).get('asm', '').split()
+                   if not op.startswith('OP_'))
+
 
 def get_indata_local(transaction, SERVER)                                             :
     rawTx = SERVER.getrawtransaction(transaction)   # gets the raw transaction from RPC
     tx = SERVER.decoderawtransaction(rawTx)         # Decodes the raw transaction from RPC
-    inhex = ''
-    for txin in tx['vin']:
-        try:
-            for inop in txin['scriptSig']['hex'].split():  # Gathers the input script
-                inhex += inop
-        except KeyError:
-            inhex += ''
-    return inhex
+    return ''.join(inop
+                   for txin in tx.get('vin')
+                   for inop in txin.get('scriptSig', {'hex': ''}).get('hex', '').split())
+

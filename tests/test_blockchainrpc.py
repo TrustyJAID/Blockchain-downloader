@@ -23,9 +23,6 @@ def test_get_indata_local():
     SERVER.decoderawtransaction.return_value = {"vin": [ {"txid": "somerandomtx","vout": 1,"scriptSig": {"asm": "thiscanbeanything","hex": "somethingbelongsherethatiswaymorethan40characters"},"sequence": 1}]}    
     hexdata = 'somethingbelongsherethatiswaymorethan40characters'
     assert hexdata == blockchainrpc.get_indata_local('somethingbelongsherethatiswaymorethan40characters', SERVER=SERVER)
-    SERVER.decoderawtransaction.return_value = {"vout": [{"value": 1,"n": 0,"scriptPubKey": {"asm": "OP_DUP cad3e1794b73c2d940eefcc29cd55f44eab95d95 OP_CHECKSIG","hex": "abcdef","reqSigs": 1,"type": "pubkeyhash","addresses": ["1walletidthatisblank"]}}, ]}
-    with pytest.raises(KeyError):
-        assert '' == blockchainrpc.get_indata_local('somethinghere', SERVER=SERVER)
         
 
 def test_get_block_height():

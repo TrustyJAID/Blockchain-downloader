@@ -67,7 +67,7 @@ def check_hash(hexcode, sumcheck):
     '''
     return ' '.join('{}'.format(key)
                     for key, values in hashes[sumcheck].iteritems()
-                    if hexlify(values.encode('utf8')) in hexcode)
+                    if values in hexcode)
 
 
 def search_hex(hexdata, IO):
@@ -102,7 +102,7 @@ def sha256_sum(self, data):
     useful to find duplicate data
     TODO: figure out how to save as dictionary file and impliment into searching
 
-    """
+    
     hashsum = hashlib.sha256(data)
     hashexists = False
     with open("hashindex.txt", "a+") as hashfile:
@@ -115,3 +115,16 @@ def sha256_sum(self, data):
             hashexists = False
     hashfile.close()
     return hashexists
+    """
+
+def crc(self, filename):
+    """
+    Should be used to determine if filename
+    is garbage or is part of the file
+    
+    prev = 0
+    for eachLine in open(filename, "rb"):
+        prev = zlib.crc32(eachLine, prev)
+        print (prev)
+    return "%X" % (prev & 0xFFFFFFFF)
+"""
