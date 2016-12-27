@@ -39,25 +39,25 @@ class dlfn():
         origdata = data
 
         significanttx = ''
-        significanttx += search_hex(hexdata, "output")
-        significanttx += search_hex(inhex, "input")
+        significanttx += search_hex(hexdata, " output")
+        significanttx += search_hex(inhex, " input")
         significanttx += check_hash(inhex+hexdata, 'ripemd160')
-        if significanttx != '':
-            print(transaction + " " + significanttx)
-            self.save_file(transaction + " " + significanttx + newline(), "significant.txt")
         try:
             if self.checksum(data):
-                significanttx += "Satosi Checksum found"
+                significanttx += " Satosi Checksum found"
             length = struct.unpack('<L', data[0:4])[0]
             data = data[8:8+length]
         except struct.error:
             print("String incorrect length for upack:"+transaction)
             # self.save_file(transaction + newline(), "incorrectlength.txt")
             pass
+
+        if significanttx != '':
+            print(transaction +" " + significanttx)
+            self.save_file(transaction + " " + significanttx + newline(), "significant.txt")
         self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
         self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
         self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
-        self.save_file(inhex+hexdata, self.FILENAME+"hexdata.txt")         # saves all binary data
 
     def get_tx_list(self, tx_list, LOCAL):
         """This function checks the blockchain for all transactions in the FILENAME document """

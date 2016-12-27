@@ -53,7 +53,7 @@ def get_data_local(transaction, SERVER):
     return ''.join(op
                    for txout in tx.get('vout')
                    for op in txout.get('scriptPubKey', {'asm': ''}).get('asm', '').split()
-                   if not op.startswith('OP_'))
+                   if not op.startswith('OP_') and len(op) >= 40)
 
 
 def get_indata_local(transaction, SERVER)                                             :
