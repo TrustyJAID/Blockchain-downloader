@@ -54,6 +54,14 @@ def get_blockchain_rawaddr_json(address, limit=50, offset=0, uri=BLOCKCHAIN_URI)
     '''Return JSON data for a given address, limit, and offset.'''
     return get_blockchain_request('rawaddr/{}'.format(address), format='json', limit=limit, offset=offset, uri=uri)
 
+def get_latest_block_height_json(uri=BLOCKCHAIN_URI):
+    '''Returns JSON data for last block height'''
+    return get_blockchain_request('latestblock', format='json', uri=uri)
+
+def get_latest_block_height(uri=BLOCKCHAIN_URI):
+    '''Return value for latest block height'''
+    return json.loads(get_latest_block_height_json())["height"]
+
 
 def get_blockchain_rawaddr(address, limit=50, offset=0, silent=True, uri=BLOCKCHAIN_URI):
     error = True
