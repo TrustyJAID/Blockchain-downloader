@@ -4,7 +4,7 @@ from __future__ import print_function
 
 from . import satoshi
 from .blockchaininfo import get_blockchain_request, get_data_online
-from .blockchainrpc import get_data_local, get_block_transactions, get_block_height
+import blockchainrpc as rpc
 from .filesystem import read, readlines, write, newline
 from .search import search_hex, search_hashes
 
@@ -14,8 +14,14 @@ from timeit import default_timer as timer
 import struct
 import zlib
 
+RPCUSER, RPCPASS = read('rpclogin.txt', 'rb').split()
+SERVER = rpc.make_server(RPCUSER, RPCPASS)
+
 class dlfn():
     FILENAME = ''
+    RPCUSER, RPCPASS = read('rpclogin.txt', 'rb').split()
+    SERVER = rpc.make_server(RPCUSER, RPCPASS)
+    
 
     def __init__(self, SERVER, FILENAME='file'):
         self.FILENAME = FILENAME
@@ -23,8 +29,9 @@ class dlfn():
     def save_data(self, transaction, LOCAL, INDIVIDUALFILE=False):
         if INDIVIDUALFILE:
             self.FILENAME = transaction
-        if LOCAL:
-            hexdata, inhex = get_data_local(transaction)
+        if LOCAL: 
+            hexdata = rpc.get_data_local(transaction, self.SERVER)
+            inhex = rpc.get_indata_local(transaction, self.SERVER)
         else:
             hexdata, inhex = get_data_online(transaction)
         data = satoshi.unhexutf8(hexdata)
@@ -35,12 +42,12 @@ class dlfn():
         significanttx += search_hex(hexdata, "output")
         significanttx += search_hex(inhex, "input")
         significanttx += search_hashes(inhex+hexdata)
-        if self.checksum(data):
-            significanttx += "Satosi Checksum found"
         if significanttx != '':
             print(transaction + " " + significanttx)
             self.save_file(transaction + " " + significanttx + newline(), "significant.txt")
         try:
+            if self.checksum(data):
+                significanttx += "Satosi Checksum found"
             length = struct.unpack('<L', data[0:4])[0]
             data = data[8:8+length]
         except struct.error:
@@ -61,10 +68,10 @@ class dlfn():
     def get_block_tx(self, start, end, LOCAL):
         """This function checks the blockchain for all transactions in the FILENAME document """
         if not end.isdigit():
-            end = get_block_height()
+            end = rpc.get_block_height(self.SERVER)
 
         for i in range(int(start), int(end)):
-            hashlist = get_block_transactions(i)
+            hashlist = rpc.get_block_transactions(i, self.SERVER)
             print("Block number: {0}".format(i))
             for tx in hashlist:
                 self.save_data(tx, LOCAL)
