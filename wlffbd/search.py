@@ -5,7 +5,7 @@ from .filesystem import read
 from binascii import hexlify
 
 hashes = {hash: json.loads(read('data/wlhashes/{}.json'.format(hash)))
-          for hash in ('md5', 'sha1', 'sha256')}
+          for hash in ('md5', 'sha1', 'sha256', 'ripemd160')}
 
 DEFAULT_MAGIC = {"DOC Header": ["d0cf11e0a1b11ae1"],
                  "DOC Footer": ["576f72642e446f63756d656e742e"],
@@ -71,18 +71,21 @@ def check_hash(hexcode, sumcheck):
 
 
 def search_hex(hexdata, IO):
-    revhex = "".join(reversed([hexdata[i:i+2] for i in range(0, len(hexdata), 2)]))  # reverses the hex
+    revhex = "".join(reversed([hexdata[i:i+2] for i in range(0, len(hexdata), 2)]))
     hexmagic = check_magic(hexdata)
     revhexmagic = check_magic(revhex)
     if hexmagic != '':
         return hexmagic + " " + IO
     if revhexmagic != '':
-        return  revhexmagic + " " + IO + " reverse"
+        return revhexmagic + " " + IO + " reverse"
     else:
         return ''
 
 
 def search_hashes(allhex):
+    '''
+    This method is obsolete with new hash dictionary
+
     md5hashsearch = check_hash(allhex, 'md5')           # Searches in hex data
     sha1hashsearch = check_hash(allhex, 'sha1')         # for hashes
     sha256hashsearch = check_hash(allhex, 'sha256')
@@ -94,6 +97,7 @@ def search_hashes(allhex):
         return sha256hashsearch + " sha256"
     else:
         return ''
+    '''
 
 def sha256_sum(self, data):
     """
