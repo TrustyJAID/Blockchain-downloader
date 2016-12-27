@@ -24,7 +24,7 @@ class dlfn():
     def __init__(self, SERVER, FILENAME='file'):
         self.FILENAME = FILENAME
 
-    def save_data(self, transaction, LOCAL, INDIVIDUALFILE=False):
+    def save_data(self, transaction, LOCAL=False, INDIVIDUALFILE=False):
         if INDIVIDUALFILE:
             self.FILENAME = transaction
         if LOCAL:

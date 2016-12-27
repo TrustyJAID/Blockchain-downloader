@@ -79,4 +79,4 @@ class __main__():
 
     else:
         dlfn.FILENAME = FILENAME
-        dlfn.save_data(BLOCKCHAINADDRESS, FILENAME, LOCAL)
+        dlfn.save_data(BLOCKCHAINADDRESS, LOCAL, INDIVIDUALFILE)
