@@ -53,7 +53,7 @@ def test_get_tx_from_online(mock_sleep, mock_urlopen):
         assert len(txlist) < n_tx
     blockchaininfo.get_tx_from_online('1234567890abcdef', limit=3, sleep=1, callback=_callback)
 
-
+'''
 def test_get_data_online():
     Page = "Output Scripts somerandomhexvalues"
     # Page.getrawtransaction.return_value = 'raw return value here'
@@ -61,7 +61,7 @@ def test_get_data_online():
     hexdata = 'somerandomhexvalues'
     assert hexdata == blockchaininfo.get_data_online('somerandomhexvalues', Page=Page)
 
-'''
+
 def test_get_indata_online():
     SERVER = Mock()
     SERVER.getrawtransaction.return_value = 'raw return value here'
