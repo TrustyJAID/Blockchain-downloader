@@ -55,9 +55,9 @@ class dlfn():
         if significanttx != '':
             print(transaction +" " + significanttx)
             self.save_file(transaction + " " + significanttx + newline(), "significant.txt")
-        # self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
-        # self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
-        # self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
+        self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
+        self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
+        self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
 
     def get_tx_list(self, tx_list, LOCAL):
         """This function checks the blockchain for all transactions in the FILENAME document """
@@ -77,7 +77,7 @@ class dlfn():
             for tx in hashlist:
                 self.save_data(tx, LOCAL)
             endtime = timer() - start
-            print("Block number: {0} | Time to complete:{1:.2f} | Number of transactions: {2}"
+            print("Block number: {0} | Time to complete:{1:.2f}s | Number of transactions: {2}"
                   .format(i, endtime, len(hashlist)))
 
 
