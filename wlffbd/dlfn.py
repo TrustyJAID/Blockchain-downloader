@@ -44,7 +44,7 @@ class dlfn():
         significanttx += check_hash(inhex+hexdata, 'ripemd160')
         try:
             if self.checksum(data):
-                significanttx += " Satosi Checksum found"
+                significanttx += " Satoshi Checksum found"
             length = struct.unpack('<L', data[0:4])[0]
             data = data[8:8+length]
         except struct.error:
