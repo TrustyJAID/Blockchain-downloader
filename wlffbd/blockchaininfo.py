@@ -2,21 +2,22 @@
 '''blockchain.info related functions'''
 import json
 import os
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import time
+import collections
 
 BLOCKCHAIN_URI = 'https://blockchain.info'
 
 
 def make_blockchain_url(path, uri=BLOCKCHAIN_URI, **kwargs):
     '''Return a blockchain.info URL with the given path appended to the uri and urlencoded keyword arguments appended.'''
-    return '{}/{}?{}'.format(uri, path, urllib.urlencode(kwargs))
+    return '{}/{}?{}'.format(uri, path, urllib.parse.urlencode(kwargs))
 
 
 def get_blockchain_request(path, uri=BLOCKCHAIN_URI, **kwargs):
     '''Return a response from urllib2.urlopen with the URL built by concatenating the uri, path, and urlencoded keyword arguments.'''
-    return urllib2.urlopen(make_blockchain_url(path, uri=uri, **kwargs))
+    return urllib.request.urlopen(make_blockchain_url(path, uri=uri, **kwargs))
 
 
 def get_blockchain_transaction(transaction, format, uri=BLOCKCHAIN_URI):
@@ -69,9 +70,9 @@ def get_blockchain_rawaddr(address, limit=50, offset=0, silent=True, uri=BLOCKCH
         try:
             dat = get_blockchain_rawaddr_json(address, limit=limit, offset=offset, uri=uri)
             error = False
-        except urllib2.URLError, e:
+        except urllib.error.URLError as e:
             if not silent:
-                print('Error: Trying to open address {} from blockchain.info: '.format(address, e.reason))
+                print(('Error: Trying to open address {} from blockchain.info: '.format(address, e.reason)))
     return json.loads(dat.read().decode())
 
 
@@ -87,7 +88,7 @@ def get_tx_from_online(address, limit=50, sleep=1, callback=None):
     txlist = get_txs_from_blockchain_json(data)
 
     while len(txlist) < n_tx:
-        if callback and callable(callback):
+        if callback and isinstance(callback, collections.Callable):
             callback(txlist, n_tx)
         offset += 50
         txlist.extend(get_txs_from_blockchain_json(get_blockchain_rawaddr(address, limit=limit, offset=offset, silent=True)))

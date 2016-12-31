@@ -8,7 +8,7 @@ import pytest
 
 def test_check_magic():
     assert 'Julian Assange Found' == search.check_magic("01234567894a756c69616e20417373616e67650123456789")
-    assert ' '.join('{} Found'.format(k) for k in search.DEFAULT_MAGIC.keys()) == search.check_magic(''.join(''.join(v) for v in search.DEFAULT_MAGIC.values()))
+    assert ' '.join('{} Found'.format(k) for k in list(search.DEFAULT_MAGIC.keys())) == search.check_magic(''.join(''.join(v) for v in list(search.DEFAULT_MAGIC.values())))
 
 
 def test_check_hashes():

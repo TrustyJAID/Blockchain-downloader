@@ -58,7 +58,7 @@ def check_magic(hexcode, magic=DEFAULT_MAGIC):
     This is the hex header search function.  It searches the line of hex for any of these known header hex values.
     '''
     return ' '.join('{} Found'.format(key)
-                   for key, values in magic.iteritems()
+                   for key, values in magic.items()
                    if all(v.lower() in hexcode for v in values))
 
 
@@ -67,7 +67,7 @@ def check_hash(hexcode, sumcheck):
     This will return whether or not a wikileaks file hash is inside the blockchain
     '''
     return ' '.join('{}'.format(key)
-                    for key, values in hashes[sumcheck].iteritems()
+                    for key, values in hashes[sumcheck].items()
                     if values in hexcode)
 
 

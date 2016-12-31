@@ -1,14 +1,15 @@
 #!/usr/bin/env python2
-from __future__ import print_function
+
 
 from wlffbd.blockchaininfo import get_tx_from_online
+from wlffbd.blockchainrpc import make_server
 from wlffbd.dlfn import dlfn
 from wlffbd.search import check_magic
 
 import json
 import sys
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 try:
     import jsonrpclib
@@ -17,7 +18,7 @@ except ImportError:
     sys.exit(-1)
 
 RPCUSER, RPCPASS = open('rpclogin.txt', 'r').read().split()
-SERVER = jsonrpclib.Server("http://{0}:{1}@localhost:8332".format(RPCUSER, RPCPASS))   # RPC Login
+SERVER = make_server(RPCUSER, RPCPASS)
 BLOCKCHAINADDRESS = ''
 global FILENAME
 FILENAME = 'file'       # global default filename setting
@@ -26,7 +27,7 @@ try:
     # Checks for an RPC connection to local blockchain
     SERVER.getinfo()
     LOCAL = True
-except Exception, e:
+except Exception as e:
     print("RPC connection not available")
     LOCAL = False
 
@@ -57,8 +58,8 @@ class __main__():
 
     elif len(sys.argv) == 1:
         # This works if no arguments are given to allow the program to function
-        BLOCKCHAINADDRESS = raw_input('Enter the blockchain Address or transactions file:')
-        FILENAME = raw_input('Enter the file name you would like to save to:')
+        BLOCKCHAINADDRESS = input('Enter the blockchain Address or transactions file:')
+        FILENAME = input('Enter the file name you would like to save to:')
         if FILENAME == '':
             # This gives a default filename
             FILENAME = 'file.txt'

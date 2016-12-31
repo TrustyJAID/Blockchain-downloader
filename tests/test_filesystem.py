@@ -3,7 +3,7 @@
 
 from wlffbd import filesystem
 from mock import patch, mock_open
-from StringIO import StringIO
+from io import StringIO
 
 import pytest
 import platform
