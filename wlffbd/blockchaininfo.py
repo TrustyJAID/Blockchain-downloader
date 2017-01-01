@@ -2,6 +2,7 @@
 '''blockchain.info related functions'''
 import json
 import os
+
 import time
 
 try:
@@ -16,19 +17,23 @@ except:
     import urllib
     import urllib2
 
+
 BLOCKCHAIN_URI = 'https://blockchain.info'
 
 
 def make_blockchain_url(path, uri=BLOCKCHAIN_URI, **kwargs):
     '''Return a blockchain.info URL with the given path appended to the uri and urlencoded keyword arguments appended.'''
+
     if Python3:
         return '{}/{}?{}'.format(uri, path, urllib.parse.urlencode(kwargs))
     else:
         return '{}/{}?{}'.format(uri, path, urllib.urlencode(kwargs))
 
 
+
 def get_blockchain_request(path, uri=BLOCKCHAIN_URI, **kwargs):
     '''Return a response from urllib2.urlopen with the URL built by concatenating the uri, path, and urlencoded keyword arguments.'''
+
     if Python3:
         return urllib.request.urlopen(make_blockchain_url(path, uri=uri, **kwargs))
     else:
@@ -79,6 +84,7 @@ def get_latest_block_height(uri=BLOCKCHAIN_URI):
     return json.loads(get_latest_block_height_json())["height"]
 
 
+
 def get_blockchain_rawaddr(address, limit=50, offset=0, silent=True, uri=BLOCKCHAIN_URI):
     error = True
     if Python3:
@@ -101,6 +107,7 @@ def get_blockchain_rawaddr(address, limit=50, offset=0, silent=True, uri=BLOCKCH
         return json.loads(dat.read().decode())
 
 
+
 def get_txs_from_blockchain_json(data):
     return [tx.get('hash').encode('ascii') for tx in data.get('txs', [])]
 
@@ -114,6 +121,7 @@ def get_tx_from_online(address, limit=50, sleep=1, callback=None):
 
     while len(txlist) < n_tx:
         if callback and isinstance(callback, collections.Callable):
+
             callback(txlist, n_tx)
         offset += 50
         txlist.extend(get_txs_from_blockchain_json(get_blockchain_rawaddr(address, limit=limit, offset=offset, silent=True)))
@@ -122,7 +130,6 @@ def get_tx_from_online(address, limit=50, sleep=1, callback=None):
             time.sleep(sleep)
 
     return txlist
-
 
 def get_data_online(transaction, Address):
     """
@@ -171,3 +178,4 @@ def get_indata_online(transaction, Page):
                         inhex += c
 
     return inhex.decode('utf8')
+

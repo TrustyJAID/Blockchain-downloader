@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 '''filesystem functions'''
-
 from __future__ import print_function
 import os
 import sys
 import platform
+
 
 
 def read(filename, mode='r', buffering=-1, default=None, silent=True):
@@ -19,6 +19,7 @@ def read(filename, mode='r', buffering=-1, default=None, silent=True):
         with open(filename, mode, buffering) as f:
             data = f.read()
     except IOError as e:
+
         print('Error: {}'.format(str(e)), file=sys.stderr)
     return data
 
@@ -35,11 +36,14 @@ def readlines(filename, mode='r', buffering=-1, default=[], silent=True):
         with open(filename, mode, buffering) as f:
             data = f.readlines()
     except IOError as e:
+
         print('Error: {}'.format(str(e)), file=sys.stderr)
     return data
 
 
+
 def write(filename, data, binary=True, mode='w', buffering=-1, silent=True, encoding="utf8"):
+
     '''Read a given filename opened with the given mode and buffering settings, returning that data or None if failure.
     Mode defaults to write.
     Negative buffering means system default for device.

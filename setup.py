@@ -19,6 +19,7 @@ setup(name='wlffbd',
       keywords='wikileaks wiki leaks blockchain cryptography bitcoin',
       author='WikiLeaks Freedom Force',
       url='https://github.com/WikiLeaksFreedomForce',
+
       version=version,
       packages=find_packages(),
       zip_safe=True,

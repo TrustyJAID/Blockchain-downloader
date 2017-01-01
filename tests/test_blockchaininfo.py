@@ -6,7 +6,8 @@ from mock import patch, Mock
 
 import pytest
 
-import urllib.request, urllib.error, urllib.parse
+
+import urllib2
 
 
 def test_make_blockchain_url():
@@ -35,13 +36,17 @@ def test_get_blockchain_rawaddr(mock_urlopen):
 def test_get_blockchain_rawaddr_urlerror(mock_urlopen):
     json = Mock()
     json.read.side_effect = ['{"key": "value"}', '{"key": "value"}']
-    mock_urlopen.side_effect = [urllib.error.URLError('Test Error'), json]
+
+    mock_urlopen.side_effect = [urllib2.URLError('Test Error'), json]
+
     assert {'key': 'value'} == blockchaininfo.get_blockchain_rawaddr('1234567890abcdef', silent=False)
 
 
 def test_get_txs_from_blockchain_json():
     assert ['0123456789abcdef'] == blockchaininfo.get_txs_from_blockchain_json({'txs':[{'hash': '0123456789abcdef'}]})
-    assert 10 == len(blockchaininfo.get_txs_from_blockchain_json({'txs':[{'hash': str(x)} for x in range(10)]}))
+
+    assert 10 == len(blockchaininfo.get_txs_from_blockchain_json({'txs':[{'hash': str(x)} for x in xrange(10)]}))
+
 
 
 @patch('wlffbd.blockchaininfo.urllib2.urlopen')
@@ -69,3 +74,4 @@ def test_get_indata_online():
     hexdata = 'somethingbelongsherethatiswaymorethan40characters'
     assert hexdata == blockchaininfo.get_indata_online('somethingbelongsherethatiswaymorethan40characters', SERVER=SERVER)
     '''
+

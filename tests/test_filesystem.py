@@ -3,11 +3,10 @@
 
 from wlffbd import filesystem
 from mock import patch, mock_open
-from io import StringIO
+
+from StringIO import StringIO
 
 import pytest
-import platform
-
 
 # TODO: Figure out why decorator version doesn't work for this
 def test_read():
@@ -46,3 +45,4 @@ def test_write_fail(mock_stderr):
 
 def test_newline():
     assert platform.system() == 'Windows' and '\r\n' or '\n' == filesystem.newline()
+

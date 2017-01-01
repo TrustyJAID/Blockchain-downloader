@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 '''dlfn class and methods'''
-
 from __future__ import print_function
 from . import satoshi
 from . import blockchaininfo as online
@@ -16,10 +15,12 @@ RPCUSER, RPCPASS = read('rpclogin.txt', 'r').split()
 SERVER = rpc.make_server(RPCUSER, RPCPASS)
 
 
+
 class dlfn():
     FILENAME = ''
     RPCUSER, RPCPASS = read('rpclogin.txt', 'r').split()
     SERVER = rpc.make_server(RPCUSER, RPCPASS)
+
 
     def __init__(self, SERVER, FILENAME='file'):
         self.FILENAME = FILENAME
@@ -45,10 +46,12 @@ class dlfn():
         try:
             if self.checksum(data):
                 significanttx += " Satoshi Checksum found"
+
             length = struct.unpack('<L', data[0:4])[0]
             data = data[8:8+length]
         except struct.error:
             print("String incorrect length for upack:"+transaction)
+
             # self.save_file(transaction + newline(), "incorrectlength.txt")
             pass
 
@@ -66,6 +69,7 @@ class dlfn():
         for line in readlines(tx_list):
             blockhash = line.rstrip('\r\n')
             if blockhash:
+
                 self.save_data(blockhash, LOCAL)
 
     def get_block_tx(self, start, end, LOCAL):
@@ -82,11 +86,13 @@ class dlfn():
                   .format(i, endtime, len(hashlist)))
 
     def save_file(self, filename, dataout, binary=True):
+
         """
         This saves the data to the chosen
         filename in binary by appending the file
         """
         write(dataout, filename, binary, 'ab')
+
 
     def checksum(self, data):
         """
@@ -96,3 +102,4 @@ class dlfn():
         """
         length, checksum, data = satoshi.length_checksum_data_from_rawdata(data)
         return satoshi.verify_checksum_data(checksum, data)
+
