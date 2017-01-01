@@ -1,4 +1,4 @@
-jsonrpclib
+jsonrpclib-pelix
 click
 colorama
 mock

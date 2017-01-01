@@ -23,7 +23,7 @@ setup(name='wlffbd',
       packages=find_packages(),
       zip_safe=True,
       platforms='Any',
-      install_requires=['jsonrpclib'],
+      install_requires=['jsonrpclib-pelix'],
       entry_points='''
       [console_scripts]
       wlffbd=wlffbd.cli:wlffbd''')

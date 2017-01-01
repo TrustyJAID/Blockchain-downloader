@@ -9,7 +9,7 @@
 ## Variables here can be set on the commandline or in Makefile-local
 
 VENV_NAME	=env
-VENV_PYTHON	=python2
+VENV_PYTHON	=python3
 VENV_CMD_OPTS	=
 
 -include Makefile-local
@@ -19,7 +19,7 @@ PACKAGE		=wlffbd
 
 VENV_CMD	=virtualenv $(VENV_CMD_OPTS)
 VENV_ACTIVATE	=env | grep VIRTUAL_ENV > /dev/null || . $(VENV_NAME)/bin/activate
-VENV_PIP	=$(VENV_NAME)/bin/pip
+VENV_PIP	=$(VENV_NAME)/bin/pip3
 
 ## Entry point, default target
 title: banner

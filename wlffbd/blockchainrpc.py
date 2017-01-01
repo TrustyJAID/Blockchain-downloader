@@ -48,17 +48,17 @@ def get_data_local(transaction, SERVER):
     """
     Downloads data from Bitcoin Core RPC and returns hex
     """
-    rawTx = SERVER.getrawtransaction(transaction)   # gets the raw transaction from RPC
-    tx = SERVER.decoderawtransaction(rawTx)         # Decodes the raw transaction from RPC
+    rawTx = SERVER.getrawtransaction(transaction)
+    tx = SERVER.decoderawtransaction(rawTx)
     return ''.join(op
                    for txout in tx.get('vout')
                    for op in txout.get('scriptPubKey', {'asm': ''}).get('asm', '').split()
                    if not op.startswith('OP_') and len(op) >= 40)
 
 
-def get_indata_local(transaction, SERVER)                                             :
-    rawTx = SERVER.getrawtransaction(transaction)   # gets the raw transaction from RPC
-    tx = SERVER.decoderawtransaction(rawTx)         # Decodes the raw transaction from RPC
+def get_indata_local(transaction, SERVER):
+    rawTx = SERVER.getrawtransaction(transaction)
+    tx = SERVER.decoderawtransaction(rawTx)
     return ''.join(inop
                    for txin in tx.get('vin')
                    for inop in txin.get('scriptSig', {'hex': ''}).get('hex', '').split())

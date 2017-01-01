@@ -104,7 +104,7 @@ def get_data_online(transaction, Address):
     Downloads the data from blockchain.info
     TODO: Change the data collection to json
     """
-    hexdata = ''
+    hexdata = b''
     atoutput = False
     for line in Address:
         if b'Output Scripts' in line:
@@ -119,7 +119,7 @@ def get_data_online(transaction, Address):
                 for c in chunks:
                     if b'O' not in c and b'\n' not in c and b'>' not in c and b'<' not in c:
                         hexdata += c
-    return hexdata
+    return hexdata.decode('utf8')
 
 
 def get_indata_online(transaction, Page):
@@ -127,7 +127,7 @@ def get_indata_online(transaction, Page):
     Downloads the data from blockchain.info
     TODO: Change the data collection to json
     """
-    inhex = ''
+    inhex = b''
     inoutput = False
     for line in Page:
 
@@ -145,4 +145,4 @@ def get_indata_online(transaction, Page):
                     if b'O' not in c and b'\n' not in c and b'>' not in c and b'<' not in c:
                         inhex += c
 
-    return inhex
+    return inhex.decode('utf8')

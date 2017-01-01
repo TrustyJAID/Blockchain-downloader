@@ -7,7 +7,6 @@ from . import blockchaininfo as online
 from . import blockchainrpc as rpc
 from .filesystem import read, readlines, write, newline
 from .search import search_hex, check_hash
-import gc
 
 from timeit import default_timer as timer
 
@@ -56,12 +55,11 @@ class dlfn():
         if significanttx != '':
             print(transaction + " " + significanttx)
             self.save_file(transaction + " " + significanttx + newline(), "significant.txt", False)
-        if "Satoshi" in significanttx:
-            self.save_file(data, self.FILENAME+"data.txt")
-        self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
-        self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
-        self.save_file(origdata, self.FILENAME+"origdata.txt")         # saves all binary data
-        gc.collect()
+        # if "Satoshi" in significanttx:
+            # self.save_file(data, self.FILENAME+"data.txt")
+        # self.save_file(indata, self.FILENAME+"indata.txt")     # saves the input script
+        # self.save_file(data, self.FILENAME+"data.txt")         # saves binary data
+        # self.save_file(origdata, self.FILENAME+"origdata.txt", True)         # saves all binary data
 
     def get_tx_list(self, tx_list, LOCAL):
         """This function checks the blockchain for all transactions in the FILENAME document """
@@ -82,7 +80,6 @@ class dlfn():
             endtime = timer() - start
             print("Block number: {0} | Time to complete:{1:.2f}s | Number of transactions: {2}"
                   .format(i, endtime, len(hashlist)))
-            gc.collect()
 
     def save_file(self, filename, dataout, binary=True):
         """

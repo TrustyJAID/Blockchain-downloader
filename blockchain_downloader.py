@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 
 from wlffbd.blockchaininfo import get_tx_from_online
