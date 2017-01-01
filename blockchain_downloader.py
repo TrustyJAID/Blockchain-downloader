@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-
+from __future__ import print_function
 from wlffbd.blockchaininfo import get_tx_from_online
 from wlffbd.blockchainrpc import make_server
 from wlffbd.dlfn import dlfn
@@ -9,7 +9,15 @@ from wlffbd.search import check_magic
 import json
 import sys
 import time
-import urllib.request, urllib.error, urllib.parse
+try:
+    # Python 3
+    import urllib.request, urllib.parse, urllib.error
+    import urllib.request, urllib.error, urllib.parse
+    import collections
+except:
+    # Python 2
+    import urllib
+    import urllib2
 
 try:
     import jsonrpclib

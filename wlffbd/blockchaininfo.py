@@ -2,22 +2,37 @@
 '''blockchain.info related functions'''
 import json
 import os
-import urllib.request, urllib.parse, urllib.error
-import urllib.request, urllib.error, urllib.parse
 import time
-import collections
+
+try:
+    # Python 3
+    Python3 = True
+    import urllib.request, urllib.parse, urllib.error
+    import urllib.request, urllib.error, urllib.parse
+    import collections
+except:
+    # Python 2
+    Python3 = False
+    import urllib
+    import urllib2
 
 BLOCKCHAIN_URI = 'https://blockchain.info'
 
 
 def make_blockchain_url(path, uri=BLOCKCHAIN_URI, **kwargs):
     '''Return a blockchain.info URL with the given path appended to the uri and urlencoded keyword arguments appended.'''
-    return '{}/{}?{}'.format(uri, path, urllib.parse.urlencode(kwargs))
+    if Python3:
+        return '{}/{}?{}'.format(uri, path, urllib.parse.urlencode(kwargs))
+    else:
+        return '{}/{}?{}'.format(uri, path, urllib.urlencode(kwargs))
 
 
 def get_blockchain_request(path, uri=BLOCKCHAIN_URI, **kwargs):
     '''Return a response from urllib2.urlopen with the URL built by concatenating the uri, path, and urlencoded keyword arguments.'''
-    return urllib.request.urlopen(make_blockchain_url(path, uri=uri, **kwargs))
+    if Python3:
+        return urllib.request.urlopen(make_blockchain_url(path, uri=uri, **kwargs))
+    else:
+        return urllib2.urlopen(make_blockchain_url(path, uri=uri, **kwargs))
 
 
 def get_blockchain_transaction(transaction, format, uri=BLOCKCHAIN_URI):
@@ -66,14 +81,24 @@ def get_latest_block_height(uri=BLOCKCHAIN_URI):
 
 def get_blockchain_rawaddr(address, limit=50, offset=0, silent=True, uri=BLOCKCHAIN_URI):
     error = True
-    while error:
-        try:
-            dat = get_blockchain_rawaddr_json(address, limit=limit, offset=offset, uri=uri)
-            error = False
-        except urllib.error.URLError as e:
-            if not silent:
-                print(('Error: Trying to open address {} from blockchain.info: '.format(address, e.reason)))
-    return json.loads(dat.read().decode())
+    if Python3:
+        while error:
+            try:
+                dat = get_blockchain_rawaddr_json(address, limit=limit, offset=offset, uri=uri)
+                error = False
+            except urllib.error.URLError as e:
+                if not silent:
+                    print(('Error: Trying to open address {} from blockchain.info: '.format(address, e.reason)))
+        return json.loads(dat.read().decode())
+    else:
+        while error:
+            try:
+                dat = get_blockchain_rawaddr_json(address, limit=limit, offset=offset, uri=uri)
+                error = False
+            except urllib2.URLError, e:
+                if not silent:
+                    print('Error: Trying to open address {} from blockchain.info: '.format(address, e.reason))
+        return json.loads(dat.read().decode())
 
 
 def get_txs_from_blockchain_json(data):
@@ -124,7 +149,7 @@ def get_data_online(transaction, Address):
 
 def get_indata_online(transaction, Page):
     """
-    Downloads the data from blockchain.info
+    Downloads the input scrip data from blockchain.info
     TODO: Change the data collection to json
     """
     inhex = b''

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''filesystem functions'''
 
-
+from __future__ import print_function
 import os
 import sys
 import platform

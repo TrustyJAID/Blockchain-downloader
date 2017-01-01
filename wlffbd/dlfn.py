@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''dlfn class and methods'''
 
-
+from __future__ import print_function
 from . import satoshi
 from . import blockchaininfo as online
 from . import blockchainrpc as rpc
