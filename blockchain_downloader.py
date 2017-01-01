@@ -1,14 +1,23 @@
-#!/usr/bin/env python2
-from __future__ import print_function
+#!/usr/bin/env python3
 
+from __future__ import print_function
 from wlffbd.blockchaininfo import get_tx_from_online
+from wlffbd.blockchainrpc import make_server
 from wlffbd.dlfn import dlfn
-from wlffbd.magic import check_magic
+from wlffbd.search import check_magic
 
 import json
 import sys
 import time
-import urllib2
+try:
+    # Python 3
+    import urllib.request, urllib.parse, urllib.error
+    import urllib.request, urllib.error, urllib.parse
+    import collections
+except:
+    # Python 2
+    import urllib
+    import urllib2
 
 try:
     import jsonrpclib
@@ -17,7 +26,7 @@ except ImportError:
     sys.exit(-1)
 
 RPCUSER, RPCPASS = open('rpclogin.txt', 'r').read().split()
-SERVER = jsonrpclib.Server("http://{0}:{1}@localhost:8332".format(RPCUSER, RPCPASS))   # RPC Login
+SERVER = make_server(RPCUSER, RPCPASS)
 BLOCKCHAINADDRESS = ''
 global FILENAME
 FILENAME = 'file'       # global default filename setting
@@ -26,7 +35,7 @@ try:
     # Checks for an RPC connection to local blockchain
     SERVER.getinfo()
     LOCAL = True
-except Exception, e:
+except Exception as e:
     print("RPC connection not available")
     LOCAL = False
 
@@ -57,8 +66,8 @@ class __main__():
 
     elif len(sys.argv) == 1:
         # This works if no arguments are given to allow the program to function
-        BLOCKCHAINADDRESS = raw_input('Enter the blockchain Address or transactions file:')
-        FILENAME = raw_input('Enter the file name you would like to save to')
+        BLOCKCHAINADDRESS = input('Enter the blockchain Address or transactions file:')
+        FILENAME = input('Enter the file name you would like to save to:')
         if FILENAME == '':
             # This gives a default filename
             FILENAME = 'file.txt'
@@ -67,11 +76,8 @@ class __main__():
         # This checks if you're giving a list of transactions or just one
         dlfn.get_tx_list(BLOCKCHAINADDRESS, LOCAL)
 
-    elif sys.argv[1].isdigit() and LOCAL:
-        if len(sys.argv) == 3:
-            dlfn.get_block_data(sys.argv[1], sys.argv[2])
-        else:
-            dlfn.get_block_data(sys.argv[1], SERVER.getblockheight())
+    elif BLOCKCHAINADDRESS.isdigit() and LOCAL:
+            dlfn.get_block_tx(BLOCKCHAINADDRESS, FILENAME, LOCAL)
 
     elif len(BLOCKCHAINADDRESS) < 64 and BLOCKCHAINADDRESS.startswith('1'):
         # Checks if wallet on main blockchain
@@ -82,7 +88,4 @@ class __main__():
 
     else:
         dlfn.FILENAME = FILENAME
-        if LOCAL:
-            dlfn.get_data_local(BLOCKCHAINADDRESS, INDIVIDUALFILE)
-        else:
-            dlfn.get_data_online(BLOCKCHAINADDRESS, INDIVIDUALFILE)
+        dlfn.save_data(BLOCKCHAINADDRESS, LOCAL, INDIVIDUALFILE)

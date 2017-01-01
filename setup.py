@@ -18,12 +18,13 @@ setup(name='wlffbd',
       license='',
       keywords='wikileaks wiki leaks blockchain cryptography bitcoin',
       author='WikiLeaks Freedom Force',
-      url='htts://github.com/WikiLeaksFreedomForce',
+      url='https://github.com/WikiLeaksFreedomForce',
+
       version=version,
       packages=find_packages(),
       zip_safe=True,
       platforms='Any',
-      install_requires=['jsonrpclib'],
+      install_requires=['jsonrpclib-pelix'],
       entry_points='''
       [console_scripts]
       wlffbd=wlffbd.cli:wlffbd''')

@@ -1,4 +1,6 @@
-jsonrpclib
+jsonrpclib-pelix
+click
+colorama
 mock
 pytest
 pytest-cov

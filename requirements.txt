@@ -1,1 +1,4 @@
-jsonrpclib
+jsonrpclib-pelix
+click
+colorama
+

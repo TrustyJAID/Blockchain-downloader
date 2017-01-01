@@ -7,10 +7,13 @@ from . import cli
 from . import blockchaininfo
 from . import dlfn
 from . import filesystem
-from . import magic
+from . import search
+
+
 
 __all__ = ['cli',
            'blockchaininfo',
            'dlfn',
            'filesystem'
-           'magic']
+           'search']
+

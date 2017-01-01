@@ -1,0 +1,7 @@
+*~
+.cache/
+.coverage
+env/
+__pycache__/
+*.pyc
+wlffbd.egg-info/

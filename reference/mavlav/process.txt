@@ -1,0 +1,16 @@
+So the 13LB starting point is the first WL wallet. I searched for that and found this one here: 13LBgLZ24X55mr8LqKddy9DusJtba17NCC
+the guy who penciled this image is using shorthand for the wallet IDs and transaction hashes obviously
+if you look at the wallet page here: https://blockchain.info/en/address/13LBgLZ24X55mr8LqKddy9DusJtba17NCC you will see the first transaction has an id of d1bad82d84b10cf8f42d96f1247ad56b814c1319f427e3df8bd954ad0b6d4bf7
+  Transactions sent and received from bitcoin address 13LBgLZ24X55mr8LqKddy9DusJtba17NCC.
+that's the one we want
+that's a transaction to the 1CxLv42sRbTKP76Ezd5DdBufctzd34wEcR wallet
+and he's written it in in the second batch there, see?
+so I went to that wallet and checked for a transaction with first few letters of ID d324c and that must be this transaction: d324cd7e090e9b69fef173c272229bf86e1ecb30d816e58fb100d429f38c6583
+and that leads to 1pm1o - the third wallet in the chain
+is everyone following this so far?
+you're not following transactions, you're following wallets
+the transactions written above the arrows by the anon is just telling us that x BTC was paid to this wallet
+eventually you get to the wallets with the ~800 transactions which probably have the gold
+I strongly urge you to do this exercise for yourself - it's doesn't take long
+I have to go sorry
+I will write this up and include screenshots and upload the doc somewhere
