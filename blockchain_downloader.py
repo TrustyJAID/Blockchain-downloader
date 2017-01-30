@@ -4,7 +4,7 @@ from __future__ import print_function
 from wlffbd.blockchaininfo import get_tx_from_online
 from wlffbd.blockchainrpc import make_server
 from wlffbd.dlfn import dlfn
-from wlffbd.search import check_magic
+from wlffbd.filesystem import write, newline
 
 import json
 import sys
@@ -22,7 +22,7 @@ except:
 try:
     import jsonrpclib
 except ImportError:
-    print('Fatal: jsonrpclib missing (Try `pip install -r requirements.txt`)')
+    print('Fatal: jsonrpclib-pelix missing (Try `pip install -r requirements.txt`)')
     sys.exit(-1)
 
 RPCUSER, RPCPASS = open('rpclogin.txt', 'r').read().split()
@@ -83,8 +83,12 @@ class __main__():
         # Checks if wallet on main blockchain
         print("This is a wallet ID, searching...")
         print("Fetching transactions from", BLOCKCHAINADDRESS)
-        get_tx_from_online(BLOCKCHAINADDRESS,
-                           callback=lambda txlist, n_tx: print("Progress (if it gets 'stuck' wait a minute or two): {} / {}".format(len(txlist), n_tx)))
+        tx = get_tx_from_online(BLOCKCHAINADDRESS,
+                                callback=lambda txlist, n_tx:
+                                print("Progress (if it gets 'stuck' wait a minute or two): {} / {}"
+                                      .format(len(txlist), n_tx)))
+        for transaction in tx:
+            write(BLOCKCHAINADDRESS + ".txt", transaction + newline(), False, "ab")
 
     else:
         dlfn.FILENAME = FILENAME

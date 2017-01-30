@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Various search related functions'''
+from __future__ import division
 import json
 from .filesystem import read
 from binascii import hexlify
@@ -58,8 +59,8 @@ def check_magic(hexcode, magic=DEFAULT_MAGIC):
     This is the hex header search function.  It searches the line of hex for any of these known header hex values.
     '''
     return ' '.join('{} Found'.format(key)
-                   for key, values in magic.items()
-                   if all(v.lower() in hexcode for v in values))
+                    for key, values in magic.items()
+                    if all(v.lower() in hexcode for v in values))
 
 
 def check_hash(hexcode, sumcheck):
@@ -81,6 +82,25 @@ def search_hex(hexdata, IO):
         return revhexmagic + " " + IO + " reverse"
     else:
         return ''
+
+
+def search_words(data):
+    count = 0
+    try:
+        for char in data:
+            if ord(char) in range(20, 127):
+                count += 1
+    except TypeError:
+        for char in data:
+            if char in range(20, 127):
+                count += 1
+    try:
+        if(count/len(data)) >= 0.75:
+            return True
+    except ZeroDivisionError:
+        return False
+    return False
+
 
 
 def search_hashes(allhex):

@@ -6,8 +6,14 @@ from mock import patch, Mock
 
 import pytest
 
-
-import urllib2
+try:
+    # Python 3
+    Python3 = True
+    import urllib.request, urllib.error, urllib.parse
+except:
+    # Python 2
+    Python3 = False
+    import urllib2
 
 
 def test_make_blockchain_url():
@@ -36,17 +42,17 @@ def test_get_blockchain_rawaddr(mock_urlopen):
 def test_get_blockchain_rawaddr_urlerror(mock_urlopen):
     json = Mock()
     json.read.side_effect = ['{"key": "value"}', '{"key": "value"}']
-
-    mock_urlopen.side_effect = [urllib2.URLError('Test Error'), json]
-
-    assert {'key': 'value'} == blockchaininfo.get_blockchain_rawaddr('1234567890abcdef', silent=False)
+    if Python3:
+        mock_urlopen.side_effect = [urllib.error.URLError('Test Error'), json]
+        assert {'key': 'value'} == blockchaininfo.get_blockchain_rawaddr('1234567890abcdef', silent=False)
+    else:
+        mock_urlopen.side_effect = [urllib2.URLError('Test Error'), json]
+        assert {'key': 'value'} == blockchaininfo.get_blockchain_rawaddr('1234567890abcdef', silent=False)
 
 
 def test_get_txs_from_blockchain_json():
     assert ['0123456789abcdef'] == blockchaininfo.get_txs_from_blockchain_json({'txs':[{'hash': '0123456789abcdef'}]})
-
-    assert 10 == len(blockchaininfo.get_txs_from_blockchain_json({'txs':[{'hash': str(x)} for x in xrange(10)]}))
-
+    assert 10 == len(blockchaininfo.get_txs_from_blockchain_json({'txs':[{'hash': str(x)} for x in range(10)]}))
 
 
 @patch('wlffbd.blockchaininfo.urllib2.urlopen')
@@ -59,11 +65,14 @@ def test_get_tx_from_online(mock_sleep, mock_urlopen):
     blockchaininfo.get_tx_from_online('1234567890abcdef', limit=3, sleep=1, callback=_callback)
 
 '''
+### TODO: Fix this for json calls or simulate web page better
 def test_get_data_online():
-    Page = "Output Scripts somerandomhexvalues"
+    Page = """Output Scripts somerandomhexvaluesandthislineneedstobemorethan100
+               charactersforittogothroughthefullscript123456789123456789123456789123456789123456789"""
     # Page.getrawtransaction.return_value = 'raw return value here'
     # Page.decoderawtransaction.return_value = {"vout": [{"value": 1,"n": 0,"scriptPubKey": {"asm": "OP_DUP cad3e1794b73c2d940eefcc29cd55f44eab95d95 OP_CHECKSIG","hex": "abcdef","reqSigs": 1,"type": "pubkeyhash","addresses": ["1walletidthatisblank"]}}, ]}
-    hexdata = 'somerandomhexvalues'
+    hexdata = """somerandomhexvaluesandthislineneedstobemorethan100
+               charactersforittogothroughthefullscript123456789123456789123456789123456789123456789"""
     assert hexdata == blockchaininfo.get_data_online('somerandomhexvalues', Page=Page)
 
 
@@ -74,4 +83,3 @@ def test_get_indata_online():
     hexdata = 'somethingbelongsherethatiswaymorethan40characters'
     assert hexdata == blockchaininfo.get_indata_online('somethingbelongsherethatiswaymorethan40characters', SERVER=SERVER)
     '''
-

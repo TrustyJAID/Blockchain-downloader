@@ -27,6 +27,11 @@ def test_search_hashes():
 
 
 def test_check_magic():
-    assert 'Julian Assange Found Input' == search.search_hex("01234567894a756c69616e20417373616e67650123456789", "Input")
-    assert 'Julian Assange Found Input reverse' == search.search_hex("896745230165676e61737341206e61696c754a8967452301", "Input")
+    assert 'Assange Found Julian Found Input' == search.search_hex("01234567894a756c69616e20417373616e67650123456789", "Input")
+    assert 'Assange Found Julian Found Input reverse' == search.search_hex("896745230165676e61737341206e61696c754a8967452301", "Input")
     assert '' == search.search_hex("deadbeef", "Input")
+
+
+def test_search_word():
+    assert True == search.search_words(b"This is a test\n and some other words \x00 123456789")
+    assert False == search.search_words(b"\xff\xff\xff\xff")

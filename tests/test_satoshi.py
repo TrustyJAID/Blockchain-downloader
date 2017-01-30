@@ -13,7 +13,7 @@ def test_unhexutf8():
 def test_rawdata_from_jsonrpc_rawtx():
     message = 'Merry Christmas 2016 from Wiki Leaks Freedom Force'
     rawdata = b'2\x00\x00\x00\xd7E\x9a\xabMerry Christmas 2016 from Wiki Leaks Freedom Force'
-    tx = {'vout': [{'scriptPubKey': {'asm': 'OP_' * 40}}, 
+    tx = {'vout': [{'scriptPubKey': {'asm': 'OP_' * 40}},
                    {'scriptPubKey': {'asm': 'OP_ ON_ POP_'}},
                    {'scriptPubKey': {'asm': satoshi.hexlify(satoshi.make_rawdata(message))}},
                    {},
@@ -30,3 +30,4 @@ def test_length_checksum_data_from_rawdata_verify_checksum_data():
     assert message == data
     assert satoshi.verify_checksum_data(checksum, data)
     assert satoshi.verify_rawdata(rawdata)
+    assert (None, None, '00000') == satoshi.length_checksum_data_from_rawdata('00000')
