@@ -31,9 +31,8 @@ class dlfn():
             hexdata = rpc.get_data_local(transaction, self.SERVER)
             inhex = rpc.get_indata_local(transaction, self.SERVER)
         else:
-            Page = online.get_blockchain_request('tx/{}'.format(transaction), show_adv='true')
+            Page = online.get_blockchain_transaction_json(transaction)
             hexdata = online.get_data_online(transaction, Page)
-            Page = online.get_blockchain_request('tx/{}'.format(transaction), show_adv='true')
             inhex = online.get_indata_online(transaction, Page)
         _, _, data = satoshi.length_checksum_data_from_rawdata(satoshi.unhexutf8(hexdata))
         indata = satoshi.unhexutf8(inhex)

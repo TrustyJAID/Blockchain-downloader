@@ -50,7 +50,7 @@ def get_blockchain_transaction(transaction, format, uri=BLOCKCHAIN_URI):
 
 def get_blockchain_transaction_json(transaction, uri=BLOCKCHAIN_URI):
     '''Return JSON data for a transaction by tx_index or tx_hash.'''
-    return get_blockchain_transaction(transaction, format='json', uri=uri)
+    return json.loads(get_blockchain_request("rawtx/{}".format(transaction)).read().decode("utf-8"))
 
 
 def get_blockchain_transaction_hex(transaction, uri=BLOCKCHAIN_URI):
@@ -146,7 +146,10 @@ def get_data_online(transaction, Page):
     Downloads the data from blockchain.info
     TODO: Change the data collection to json
     """
-    hexdata = b''
+    hexdata = ''
+    for outputs in Page["out"]:
+        hexdata += outputs["script"]
+    """
     atoutput = False
     for line in Page:
         if b'Output Scripts' in line:
@@ -154,14 +157,19 @@ def get_data_online(transaction, Page):
 
         if b'</table>' in line:
             atoutput = False
+        
+        if b'(decoded)' in line:
+            atoutpute = False
 
         if atoutput:
             if len(line) > 100:
                 chunks = line.split(b' ')
                 for c in chunks:
                     if b'O' not in c and b'\n' not in c and b'>' not in c and b'<' not in c:
+                        print(c)
                         hexdata += c
-    return hexdata.decode('utf8')
+    """
+    return hexdata
 
 
 def get_indata_online(transaction, Page):
@@ -169,7 +177,10 @@ def get_indata_online(transaction, Page):
     Downloads the input scrip data from blockchain.info
     TODO: Change the data collection to json
     """
-    inhex = b''
+    inhex = ''
+    for inputs in Page["inputs"]:
+        inhex += inputs["script"]
+    """
     inoutput = False
     for line in Page:
 
@@ -184,6 +195,7 @@ def get_indata_online(transaction, Page):
                 chunks = line.split(b' ')
                 for c in chunks:
                     if b'O' not in c and b'\n' not in c and b'>' not in c and b'<' not in c:
+                        print(c)
                         inhex += c
-
-    return inhex.decode('utf8')
+    """
+    return inhex

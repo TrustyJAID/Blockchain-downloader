@@ -6,3 +6,9 @@ __pycache__/
 *.pyc
 wlffbd.egg-info/
 *.bak
+rpclogin.txt
+Filedata.txt
+Fileindata.txt
+Fileorigdata.txt
+significant.txt
+wlffbd/blockchaininfo.pyc
