@@ -31,12 +31,13 @@ class dlfn():
             hexdata = rpc.get_data_local(transaction, self.SERVER)
             inhex = rpc.get_indata_local(transaction, self.SERVER)
         else:
-            Page = online.get_blockchain_transaction_json(transaction)
-            hexdata = online.get_data_online(transaction, Page)
-            inhex = online.get_indata_online(transaction, Page)
-        _, _, data = satoshi.length_checksum_data_from_rawdata(satoshi.unhexutf8(hexdata))
+            page = online.get_blockchain_transaction_json(transaction)
+            hexdata = online.get_data_online(page)
+            inhex = online.get_indata_online(page)
         indata = satoshi.unhexutf8(inhex)
         origdata = satoshi.unhexutf8(hexdata)
+        _, _, data = satoshi.length_checksum_data_from_rawdata(origdata)
+        
 
         significanttx = ''
         significanttx += search_hex(hexdata, " output")

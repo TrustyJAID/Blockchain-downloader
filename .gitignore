@@ -12,3 +12,6 @@ Fileindata.txt
 Fileorigdata.txt
 significant.txt
 wlffbd/blockchaininfo.pyc
+rpclogin.txt
+*.txt
+*.pyc

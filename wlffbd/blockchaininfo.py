@@ -141,61 +141,23 @@ def get_tx_from_online(address, limit=50, sleep=1, callback=None):
     return txlist
 
 
-def get_data_online(transaction, Page):
+def get_data_online(page):
     """
     Downloads the data from blockchain.info
-    TODO: Change the data collection to json
     """
     hexdata = ''
-    for outputs in Page["out"]:
+    for outputs in page["out"]:
         hexdata += outputs["script"]
-    """
-    atoutput = False
-    for line in Page:
-        if b'Output Scripts' in line:
-            atoutput = True
 
-        if b'</table>' in line:
-            atoutput = False
-        
-        if b'(decoded)' in line:
-            atoutpute = False
-
-        if atoutput:
-            if len(line) > 100:
-                chunks = line.split(b' ')
-                for c in chunks:
-                    if b'O' not in c and b'\n' not in c and b'>' not in c and b'<' not in c:
-                        print(c)
-                        hexdata += c
-    """
     return hexdata
 
 
-def get_indata_online(transaction, Page):
+def get_indata_online(page):
     """
     Downloads the input scrip data from blockchain.info
-    TODO: Change the data collection to json
     """
     inhex = ''
-    for inputs in Page["inputs"]:
+    for inputs in page["inputs"]:
         inhex += inputs["script"]
-    """
-    inoutput = False
-    for line in Page:
 
-        if b'Input Scripts' in line:
-            inoutput = True
-
-        if b'</table>' in line:
-            inoutput = False
-
-        if inoutput:
-            if len(line) > 100:
-                chunks = line.split(b' ')
-                for c in chunks:
-                    if b'O' not in c and b'\n' not in c and b'>' not in c and b'<' not in c:
-                        print(c)
-                        inhex += c
-    """
     return inhex
