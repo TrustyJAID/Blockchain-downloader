@@ -33,7 +33,7 @@ BLOCKCHAINADDRESS = ''
 global FILENAME
 FILENAME = 'file'       # global default filename setting
 INDIVIDUALFILE = True  # Single flag for single file fore each transaction
-
+SERVER = None
 def check_folder():
     if not os.path.exists("temp"):
         print("Creating temp folder")
@@ -62,10 +62,11 @@ if __name__ == "__main__":
         except IndexError:
             BLOCKCHAINADDRESS = str(sys.argv[1])
 
-        RPCUSER, RPCPASS = open('rpclogin.txt', 'r').read().split()
-        SERVER = make_server(RPCUSER, RPCPASS)
+        
         try:
             # Checks for an RPC connection to local blockchain
+            RPCUSER, RPCPASS = open('rpclogin.txt', 'r').read().split()
+            SERVER = make_server(RPCUSER, RPCPASS)
             SERVER.getinfo()
             LOCAL = True
         except Exception as e:
@@ -75,7 +76,7 @@ if __name__ == "__main__":
 
         if BLOCKCHAINADDRESS.endswith(".txt"):
             # This checks if you're giving a list of transactions or just one
-            dlfn.get_tx_list(BLOCKCHAINADDRESS, LOCAL, True)
+            dlfn.get_tx_list(BLOCKCHAINADDRESS, LOCAL, False)
 
         elif BLOCKCHAINADDRESS.isdigit() and LOCAL:
                 dlfn.get_block_tx(BLOCKCHAINADDRESS, FILENAME, LOCAL)
