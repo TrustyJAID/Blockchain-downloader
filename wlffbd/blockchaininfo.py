@@ -82,7 +82,7 @@ def get_blockchain_rawaddr_json(address, limit=50, offset=0, uri=BLOCKCHAIN_URI)
 
 def get_blockchain_tx_from_addr(address, limit=50, offset=0, uri=BLOCKCHAIN_URI):
     '''Return JSON data for a given address, limit, and offset.'''
-    return json.loads(get_blockchain_request('addr/{}'.format(address) uri=uri))
+    return json.loads(get_blockchain_request('addr/{}'.format(address), uri=uri))
 
 def get_latest_block_height_json(uri=BLOCKCHAIN_URI):
     '''Returns JSON data for last block height'''
