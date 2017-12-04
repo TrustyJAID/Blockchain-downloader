@@ -25,7 +25,10 @@ except:
     import urllib2
     from Tkinter import *
 
-RPCUSER, RPCPASS = open('rpclogin.txt', 'r').read().split()
+try:
+    RPCUSER, RPCPASS = open('rpclogin.txt', 'r').read().split()
+except:
+    RPCUSER, RPCPASS = "", ""
 
 class Blockchain_GUI:              
     def __init__(self, master):

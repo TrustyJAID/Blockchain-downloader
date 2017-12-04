@@ -17,7 +17,7 @@ except:
     import urllib
     import urllib2
 
-BLOCKCHAIN_URI = 'https://blockchain.info'
+BLOCKCHAIN_URI = 'https://blockexplorer.com/api'
 
 
 def make_blockchain_url(path, uri=BLOCKCHAIN_URI, **kwargs):
@@ -36,9 +36,12 @@ def get_blockchain_request(path, uri=BLOCKCHAIN_URI, **kwargs):
     Return a response from urllib2.urlopen with the URL built
     by concatenating the uri, path, and urlencoded keyword arguments.
     '''
+
     if Python3:
-        return urllib.request.urlopen(make_blockchain_url(path, uri=uri, **kwargs))
+        req = urllib.request.Request(make_blockchain_url(path, uri=uri, **kwargs), headers={'User-Agent': 'Mozilla/5.0'})
+        return urllib.request.urlopen(req)
     else:
+        req = urllib2.Request(make_blockchain_url(path, uri=uri, **kwargs), headers={'User-Agent': 'Mozilla/5.0'})
         return urllib2.urlopen(make_blockchain_url(path, uri=uri, **kwargs))
 
 
@@ -50,7 +53,7 @@ def get_blockchain_transaction(transaction, format, uri=BLOCKCHAIN_URI):
 
 def get_blockchain_transaction_json(transaction, uri=BLOCKCHAIN_URI):
     '''Return JSON data for a transaction by tx_index or tx_hash.'''
-    return json.loads(get_blockchain_request("rawtx/{}".format(transaction)).read().decode("utf-8"))
+    return json.loads(get_blockchain_request("tx/{}".format(transaction)).read().decode("utf-8"))
 
 
 def get_blockchain_transaction_hex(transaction, uri=BLOCKCHAIN_URI):
@@ -60,7 +63,7 @@ def get_blockchain_transaction_hex(transaction, uri=BLOCKCHAIN_URI):
 
 def get_blockchain_block_height_json(height, uri=BLOCKCHAIN_URI):
     '''Return JSON data with array of blocks at specified height.'''
-    return get_blockchain_request('block-height/{}'.format(height), format='json', uri=uri)
+    return get_blockchain_request('block-index/{}'.format(height), format='json', uri=uri)
 
 
 def get_blockchain_block_height(height, uri=BLOCKCHAIN_URI):
@@ -77,9 +80,13 @@ def get_blockchain_rawaddr_json(address, limit=50, offset=0, uri=BLOCKCHAIN_URI)
     '''Return JSON data for a given address, limit, and offset.'''
     return get_blockchain_request('rawaddr/{}'.format(address), format='json', limit=limit, offset=offset, uri=uri)
 
+def get_blockchain_tx_from_addr(address, limit=50, offset=0, uri=BLOCKCHAIN_URI):
+    '''Return JSON data for a given address, limit, and offset.'''
+    return json.loads(get_blockchain_request('addr/{}'.format(address) uri=uri))
+
 def get_latest_block_height_json(uri=BLOCKCHAIN_URI):
     '''Returns JSON data for last block height'''
-    return get_blockchain_request('latestblock', format='json', uri=uri)
+    return get_blockchain_request('status?q=getBlockCount', format='json', uri=uri)
 
 def get_latest_block_height(uri=BLOCKCHAIN_URI):
     '''Return value for latest block height'''
@@ -114,8 +121,10 @@ def get_txs_from_blockchain_json(data):
 
 def get_tx_from_online(address, limit=50, sleep=1, callback=None):
     address = address.rstrip('\r\n')
+    txlist = get_blockchain_tx_from_addr(address)["transactions"]
+    """
     offset = 0
-    data = get_blockchain_rawaddr(address, limit=limit, offset=offset, silent=False)
+    data = get_blockchain_tx_from_addr(address, limit=limit, offset=offset, silent=False)
     n_tx = data['n_tx']
     txlist = get_txs_from_blockchain_json(data)
 
@@ -136,28 +145,30 @@ def get_tx_from_online(address, limit=50, sleep=1, callback=None):
             txlist.extend(get_txs_from_blockchain_json(get_blockchain_rawaddr(address, limit=limit, offset=offset, silent=True)))
             # Lets be nice to blockchain.info
             if sleep:
-                time.sleep(sleep)
+                time.sleep(sleep)"""
 
     return txlist
 
 
 def get_data_online(page):
     """
-    Downloads the data from blockchain.info
+    Downloads the data from blockexplorer
     """
-    hexdata = ''
-    for outputs in page["out"]:
-        hexdata += outputs["script"][4:-4]
-
-    return hexdata
+    return ''.join(op
+                   for txout in page.get('vout')
+                   for op in txout.get('scriptPubKey', {'asm': ''}).get('asm', '').split()
+                   if not op.startswith('OP_') and len(op) >= 40)
 
 
 def get_indata_online(page):
     """
-    Downloads the input scrip data from blockchain.info
+    Downloads the input scrip data from blockexplorer
     """
-    inhex = ''
-    for inputs in page["inputs"]:
-        inhex += inputs["script"][4:-4]
+    return ''.join(inop
+                   for txin in page.get('vin')
+                   for inop in txin.get('scriptSig', {'hex': ''}).get('hex', '').split())
+    # inhex = ''
+    # for inputs in page["inputs"]:
+        # inhex += inputs["script"][4:-4]
 
-    return inhex
+    # return inhex
