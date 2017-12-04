@@ -52,6 +52,28 @@ DEFAULT_MAGIC = {"DOC Header": ["d0cf11e0a1b11ae1"],
                  "7FG final request": ["831cf9c1c534ecdae63e2c8783eb9"],
                  "fall of cassandra": ["2b6dae482aede5bac99b7d47abdb3"]}
 
+extensions = {"DOC Header": "doc",
+                 "XLS Header": "xls",
+                 "PPT Header": "ppt",
+                 "ZIP Header": "zip",
+                 "JPG Header": "jpg",
+                 "GIF Header": "gif",
+                 "PDF Header": "pdf",
+                 "PDF-Header": "pdf",
+                 "Torrent Header": "torrent",
+                 "GZ Header": "gz",
+                 "TAR Header": "tar",
+                 "TAR.GZ Header": "tar.gz",
+                 "EPUB Header": "epub",
+                 "PNG Header": "png",
+                 "RAR Header": "rar",
+                 "OGG Header": "ogg",
+                 "WAV Header": "wav",
+                 "AVI Header": "avi",
+                 "MIDI Header": "midi",
+                 "7z Header": "7z",
+                 "DMG Header": "dmg"}
+
 
 def check_magic(hexcode, magic=DEFAULT_MAGIC):
     '''Returns a string listing magic bytes found in the given hexcode and compared against the magic dictionary of keys to lists of values.
@@ -101,6 +123,11 @@ def search_words(data):
         return False
     return False
 
+def get_extension(significant):
+        for extension in extensions:
+            if extension in significant:
+                return extensions[extension]
+        return "txt"
 
 
 def search_hashes(allhex):

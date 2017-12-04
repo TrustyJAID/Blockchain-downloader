@@ -147,7 +147,7 @@ def get_data_online(page):
     """
     hexdata = ''
     for outputs in page["out"]:
-        hexdata += outputs["script"]
+        hexdata += outputs["script"][4:-4]
 
     return hexdata
 
@@ -158,6 +158,6 @@ def get_indata_online(page):
     """
     inhex = ''
     for inputs in page["inputs"]:
-        inhex += inputs["script"]
+        inhex += inputs["script"][4:-4]
 
     return inhex
